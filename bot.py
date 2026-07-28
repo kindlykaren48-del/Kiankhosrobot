@@ -1,5 +1,7 @@
 import os
 import requests
+
+from flask import Flask, request
 from dotenv import load_dotenv
 
 from telegram import Update
@@ -16,90 +18,87 @@ load_dotenv()
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
+RENDER_EXTERNAL_URL = os.getenv("RENDER_EXTERNAL_URL")
+
+PORT = int(os.getenv("PORT", "10000"))
+
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+
 MODEL = "openrouter/free"
+
+WEBHOOK_PATH = "/telegram-webhook"
 
 
 SYSTEM_PROMPT = """
 تو مدیر ارشد تولید محتوای اینستاگرام برای یک متخصص کودکان و نوزادان هستی.
 
 هدف:
-تولید محتوای علمی، جذاب و قابل اعتماد برای والدین، با تمرکز بر ریلزهای کوتاه اینستاگرام.
+تولید محتوای علمی، جذاب و قابل اعتماد برای والدین.
 
 هویت برند:
 - تخصص: کودکان و نوزادان
 - مخاطب: والدین و مراقبین کودک
 - زبان: فارسی طبیعی و روان ایرانی
 - لحن: علمی، حرفه‌ای، آرام، صمیمی و قابل اعتماد
-- از ترساندن مخاطب، اغراق و ادعاهای پزشکی بدون پشتوانه خودداری کن.
 
 قوانین ریلز:
 
-1. مدت ویدئو باید بین 20 تا 30 ثانیه باشد.
-2. پیش‌فرض را نزدیک 30 ثانیه تنظیم کن، مگر اینکه موضوع با زمان کمتر بهتر منتقل شود.
+1. مدت ویدئو فقط بین 20 تا 30 ثانیه باشد.
+2. ترجیحاً نزدیک 30 ثانیه باشد.
 3. ریلز فقط یک پیام علمی اصلی داشته باشد.
 4. در خود ریلز فقط:
    - Hook
    - توضیح علمی
    - نکته کلیدی
    قرار بگیرد.
-5. در ریلز جمع‌بندی جداگانه ننویس.
-6. در ریلز باور غلط، هشدار طولانی، علائم خطر و نکات فرعی را وارد نکن.
-7. این موارد را در کپشن قرار بده.
-8. دعوت به ذخیره و اشتراک‌گذاری فقط به صورت کوچک روی تصویر یا آیکون باشد و زمان گویندگی را نگیرد.
-9. متن گویندگی باید طبیعی باشد و برای خواندن توسط پزشک مناسب باشد.
-10. از اصطلاحات پزشکی غیرضروری و پیچیده برای والدین استفاده نکن.
-11. اگر موضوع از نظر پزشکی حساس است، دقت علمی را بر جذابیت ترجیح بده.
-12. اطلاعاتی که ممکن است به‌سرعت تغییر کنند را بدون اطمینان قطعی بیان نکن.
-
-دو سبک تولید:
+5. جمع‌بندی جداگانه در پایان ریلز نداشته باش.
+6. باور غلط، هشدار، علائم خطر و نکات تکمیلی را داخل متن گویندگی نیاور.
+7. این موارد در کپشن قرار بگیرند.
+8. دعوت به Save و Share فقط به صورت آیکون یا نوشته بسیار کوچک روی تصویر باشد.
+9. CTA نباید زمان گویندگی را بگیرد.
+10. متن گویندگی طبیعی و مناسب صحبت کردن پزشک باشد.
+11. از ترساندن والدین و اغراق خودداری کن.
+12. اطلاعات پزشکی باید تا حد ممکن مبتنی بر شواهد باشد.
 
 STYLE A:
-حضور پزشک جلوی دوربین.
-برای هر صحنه، پیشنهاد ساده و عملی فیلم‌برداری بده.
+پزشک جلوی دوربین حضور دارد.
 
 STYLE B:
-بدون حضور پزشک.
-برای هر صحنه، پیشنهاد تصویر، انیمیشن یا ویدئوی مناسب برای تولید با AI بده.
+بدون حضور پزشک؛ با تصویر، انیمیشن یا ویدئوی تولیدشده با AI.
 
-اگر کاربر سبک را مشخص نکرد، هر دو سبک را پیشنهاد بده اما محتوای علمی مشترک باشد.
-
-ساختار خروجی:
+خروجی:
 
 🎬 عنوان
 
 🔥 Hook
 
-⏱ مدت پیشنهادی
+⏱ مدت
 
-🎙 متن کامل گویندگی
-20 تا 30 ثانیه، فقط توضیح علمی و نکته کلیدی.
+🎙 متن گویندگی
+20 تا 30 ثانیه
 
-🎥 STYLE A — حضور پزشک
-صحنه‌ها با زمان تقریبی.
+🎥 STYLE A
+صحنه‌بندی و پیشنهاد فیلم‌برداری
 
-🤖 STYLE B — بدون حضور پزشک
-صحنه‌ها با زمان تقریبی و پیشنهاد Visual.
+🤖 STYLE B
+صحنه‌بندی و پیشنهاد Visual
 
-🖥 متن‌های کوتاه روی تصویر
-فقط موارد ضروری.
+🖥 متن روی تصویر
 
 🔖 CTA تصویری
-پیشنهاد کوچک برای آیکون Save و Share، بدون اضافه کردن به متن گویندگی.
 
 📝 کپشن
-کپشن باید شامل:
+شامل:
 - توضیح تکمیلی
-- باورهای غلط مرتبط، در صورت وجود
-- هشدارهای مهم، در صورت وجود
-- موارد مراجعه یا ارجاع پزشکی، در صورت نیاز
-- یک سؤال مناسب برای افزایش تعامل
+- باورهای غلط
+- هشدارهای لازم
+- علائم خطر در صورت نیاز
+- زمان مراجعه به پزشک
+- سؤال مناسب برای تعامل
 
 #️⃣ هشتگ‌ها
 
 📌 نکته علمی کلیدی
-
-خروجی را کاربردی و آماده استفاده کن.
 """
 
 
@@ -108,7 +107,7 @@ def ask_openrouter(user_message: str) -> str:
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://telegram.org/",
+        "HTTP-Referer": RENDER_EXTERNAL_URL or "https://render.com",
         "X-Title": "Kiankhosrobot",
     }
 
@@ -137,56 +136,78 @@ def ask_openrouter(user_message: str) -> str:
 
     if response.status_code != 200:
         try:
-            error_data = response.json()
+            error = response.json()
         except Exception:
-            error_data = response.text
+            error = response.text
 
         raise RuntimeError(
-            f"OpenRouter error {response.status_code}: {error_data}"
+            f"OpenRouter error {response.status_code}: {error}"
         )
 
     data = response.json()
 
-    if "choices" not in data or not data["choices"]:
-        raise RuntimeError("OpenRouter پاسخ قابل استفاده‌ای برنگرداند.")
+    if not data.get("choices"):
+        raise RuntimeError("OpenRouter پاسخ معتبری برنگرداند.")
 
     return data["choices"][0]["message"]["content"]
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def send_long_message(update: Update, text: str):
+
+    max_length = 3800
+
+    for i in range(0, len(text), max_length):
+        await update.message.reply_text(
+            text[i:i + max_length]
+        )
+
+
+async def start(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
 
     await update.message.reply_text(
         "سلام 👋\n\n"
-        "من Kiankhosrobot هستم؛ دستیار تولید محتوای اینستاگرام "
-        "برای برند پزشکی کودکان.\n\n"
-        "موضوع ریلز را برایم بفرست.\n\n"
-        "مثال:\n"
-        "تب در کودک\n\n"
-        "یا:\n"
-        "/reel زردی نوزاد"
+        "من Kiankhosrobot هستم.\n"
+        "دستیار تولید محتوای اینستاگرام پزشکی کودکان.\n\n"
+        "برای ساخت ریلز بنویس:\n\n"
+        "/reel تب کودک\n\n"
+        "یا فقط موضوع را بفرست."
     )
 
 
-async def reel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def reel(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
 
     topic = " ".join(context.args).strip()
 
     if not topic:
         await update.message.reply_text(
-            "موضوع ریلز را بعد از /reel بنویس.\n\n"
+            "موضوع ریلز را بنویس.\n\n"
             "مثال:\n"
-            "/reel تب کودک"
+            "/reel زردی نوزاد"
         )
         return
 
     await update.message.reply_text(
-        "🎬 در حال ساخت ریلز...\n"
-        "موضوع را از نظر علمی و ساختار اینستاگرامی بررسی می‌کنم."
+        "🎬 در حال ساخت ریلز...\n\n"
+        "موضوع را از نظر علمی و ساختار اینستاگرام بررسی می‌کنم."
     )
 
     try:
+
         result = ask_openrouter(
-            f"برای این موضوع یک ریلز حرفه‌ای بساز:\n\n{topic}"
+            f"""
+یک ریلز حرفه‌ای 20 تا 30 ثانیه‌ای درباره این موضوع بساز:
+
+{topic}
+
+فقط یک پیام علمی اصلی را آموزش بده.
+"""
+
         )
 
         await send_long_message(update, result)
@@ -196,7 +217,7 @@ async def reel(update: Update, context: ContextTypes.DEFAULT_TYPE):
         print("ERROR:", error)
 
         await update.message.reply_text(
-            "⚠️ فعلاً در اتصال به موتور هوش مصنوعی مشکلی پیش آمد.\n\n"
+            "⚠️ در اتصال به موتور هوش مصنوعی مشکلی پیش آمد.\n"
             "چند لحظه بعد دوباره امتحان کن."
         )
 
@@ -212,7 +233,7 @@ async def normal_message(
         return
 
     await update.message.reply_text(
-        "🧠 دارم محتوای مناسب برای این موضوع را آماده می‌کنم..."
+        "🧠 دارم محتوا را آماده می‌کنم..."
     )
 
     try:
@@ -230,59 +251,83 @@ async def normal_message(
         )
 
 
-async def send_long_message(update: Update, text: str):
+app = Flask(__name__)
 
-    # Telegram پیام‌های بسیار طولانی را قبول نمی‌کند.
-    # خروجی را به قطعات کوچک‌تر تقسیم می‌کنیم.
+telegram_app = (
+    Application.builder()
+    .token(TELEGRAM_TOKEN)
+    .updater(None)
+    .build()
+)
 
-    max_length = 3800
+telegram_app.add_handler(
+    CommandHandler("start", start)
+)
 
-    for i in range(0, len(text), max_length):
+telegram_app.add_handler(
+    CommandHandler("reel", reel)
+)
 
-        await update.message.reply_text(
-            text[i:i + max_length]
-        )
+telegram_app.add_handler(
+    MessageHandler(
+        filters.TEXT & ~filters.COMMAND,
+        normal_message
+    )
+)
 
 
-def main():
+@app.get("/")
+def home():
 
-    if not TELEGRAM_TOKEN:
-        raise RuntimeError(
-            "TELEGRAM_TOKEN در Environment Variables تنظیم نشده است."
-        )
+    return "Kiankhosrobot is running."
 
-    if not OPENROUTER_API_KEY:
-        raise RuntimeError(
-            "OPENROUTER_API_KEY در Environment Variables تنظیم نشده است."
-        )
 
-    app = (
-        Application.builder()
-        .token(TELEGRAM_TOKEN)
-        .build()
+@app.get("/health")
+def health():
+
+    return "OK"
+
+
+@app.post(WEBHOOK_PATH)
+async def telegram_webhook():
+
+    data = request.get_json(force=True)
+
+    update = Update.de_json(
+        data,
+        telegram_app.bot
     )
 
-    app.add_handler(
-        CommandHandler("start", start)
+    await telegram_app.process_update(update)
+
+    return "OK"
+
+
+async def setup_webhook():
+
+    await telegram_app.initialize()
+
+    webhook_url = (
+        RENDER_EXTERNAL_URL.rstrip("/")
+        + WEBHOOK_PATH
     )
 
-    app.add_handler(
-        CommandHandler("reel", reel)
-    )
-
-    app.add_handler(
-        MessageHandler(
-            filters.TEXT & ~filters.COMMAND,
-            normal_message
-        )
-    )
-
-    print("Kiankhosrobot is running...")
-
-    app.run_polling(
+    await telegram_app.bot.set_webhook(
+        url=webhook_url,
         allowed_updates=Update.ALL_TYPES
     )
 
+    print("Webhook set to:")
+    print(webhook_url)
+
 
 if __name__ == "__main__":
-    main()
+
+    import asyncio
+
+    asyncio.run(setup_webhook())
+
+    app.run(
+        host="0.0.0.0",
+        port=PORT
+        )
