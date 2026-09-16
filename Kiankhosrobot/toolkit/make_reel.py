@@ -32,6 +32,7 @@ PALETTES = {
     "wineamber": [((74,10,34),(158,28,62)), ((122,66,8),(214,148,32)),
                   ((92,14,44),(176,40,80)), ((136,80,10),(230,170,54))],
     "aurora": [((124,58,237),(186,130,255)), ((14,165,183),(86,232,235)), ((236,72,120),(255,150,180)), ((234,179,8),(255,222,110))],
+    "neonmosaic": [((0,200,190),(90,255,235)), ((255,90,120),(255,160,175)), ((255,190,40),(255,225,120)), ((140,110,255),(190,170,255))],
     "neonpurple": [((168,85,247),(216,160,255)), ((34,211,238),(140,245,255)), ((244,114,182),(255,175,215)), ((250,204,21),(255,232,120))],
     "neon": [((232,170,20),(255,214,70)), ((30,120,230),(90,190,255)),
              ((36,190,120),(120,240,160)), ((240,150,30),(255,200,90))],
@@ -288,9 +289,10 @@ def render(cfg, target=25.0):
 
 
 def build_all(cfg, target=25.0):
-    global _NEON_BASE, _NEON_ARC
+    global _NEON_BASE, _NEON_ARC, _NEON_MOSAIC
     _NEON_BASE = tuple(cfg.get("neon_base", (8, 8, 10)))
     _NEON_ARC = tuple(cfg.get("neon_arc", (255, 140, 30, 26)))
+    _NEON_MOSAIC = bool(cfg.get("neon_mosaic", False))
     PAL = cfg.get("palette") if isinstance(cfg.get("palette"), list) \
         else PALETTES.get(cfg.get("palette", "purple"), PALETTES["purple"])
     if cfg.get("style") == "neon":
@@ -309,6 +311,7 @@ def build_all(cfg, target=25.0):
 # ============================ NEON STYLE ============================
 
 _NEON_BASE = (8, 8, 10)
+_NEON_MOSAIC = False
 _NEON_ARC = (255, 140, 30, 26)
 
 
@@ -322,6 +325,24 @@ def _neon_bg(seed_cols):
     ov = ov.filter(ImageFilter.GaussianBlur(150))
     img = Image.alpha_composite(img.convert("RGBA"), ov)
     d = ImageDraw.Draw(img, "RGBA")
+    if _NEON_MOSAIC:
+        import random as _rnd
+        r = _rnd.Random(7)
+        mo = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        md = ImageDraw.Draw(mo, "RGBA")
+        TS = 108
+        for gy in range(0, H, TS):
+            for gx in range(0, W, TS):
+                c = seed_cols[(gx//TS + gy//TS) % len(seed_cols)]
+                a = r.choice([0, 0, 0, 0, 22, 34, 46])
+                if a:
+                    md.rounded_rectangle([gx+5, gy+5, gx+TS-5, gy+TS-5], 16,
+                                         fill=(c[0], c[1], c[2], a))
+                md.rounded_rectangle([gx+5, gy+5, gx+TS-5, gy+TS-5], 16,
+                                     outline=(c[0], c[1], c[2], 46), width=2)
+        mo.putalpha(mo.getchannel("A").point(lambda v: int(v*0.42)))
+        img = Image.alpha_composite(img, mo)
+        d = ImageDraw.Draw(img, "RGBA")
     for k in range(5):
         y = 120 + k*430
         d.arc([-420, y, W+420, y+560], 200, 340, fill=_NEON_ARC, width=6)
