@@ -18,6 +18,17 @@ except Exception:          # نبود fatext → حالت قبلی (نیازمن
     _FD = None
     HAVE_FATEXT = False
 
+try:
+    from PIL import features as _features
+    HAVE_RAQM = bool(_features.check("raqm"))
+except Exception:
+    HAVE_RAQM = False
+
+if not HAVE_FATEXT and not HAVE_RAQM:
+    print("!! هشدار: نه fatext.py موجود است و نه Pillow با libraqm ساخته شده؛ "
+          "متن فارسی به‌هم‌چسبیده رندر می‌شود. fatext.py را کنار make_reel.py بگذار "
+          "یا uharfbuzz و freetype-py را نصب کن.")
+
 
 def _draw(image, mode=None):
     """جایگزین ImageDraw.Draw( ) که متن فارسی را درست می‌چیند."""
@@ -151,7 +162,7 @@ def make_music(path="bgm.wav"):
 
 
 
-def top_scrim(img, y_end=780, top_a=190, base_a=70):
+def top_scrim(img, y_end=900, top_a=215, base_a=80):
     """پردهٔ گرادیانی تیره در بالای کاور تا تیتر خوانا بماند."""
     ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     od = ImageDraw.Draw(ov)
