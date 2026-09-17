@@ -21,12 +21,15 @@ Kiankhosrobot/
   toolkit/
     make_reel.py         ← موتور اصلی ساخت ریلز
     icons.py             ← ۹۱ آیکون وکتور
+    fatext.py            ← شکل‌دهی متن فارسی با HarfBuzz (جایگزین libraqm)
+    topic_adhd.py        ← نمونهٔ پیکربندی یک موضوع
 ```
 
 لینک خام فایل‌ها (برای دانلود مستقیم):
 ```
 https://raw.githubusercontent.com/kindlykaren48-del/Kiankhosrobot/main/Kiankhosrobot/toolkit/make_reel.py
 https://raw.githubusercontent.com/kindlykaren48-del/Kiankhosrobot/main/Kiankhosrobot/toolkit/icons.py
+https://raw.githubusercontent.com/kindlykaren48-del/Kiankhosrobot/main/Kiankhosrobot/toolkit/fatext.py
 https://raw.githubusercontent.com/kindlykaren48-del/Kiankhosrobot/main/Kiankhosrobot/DASTOOR-OLAMAL.md
 ```
 
@@ -35,7 +38,7 @@ https://raw.githubusercontent.com/kindlykaren48-del/Kiankhosrobot/main/Kiankhosr
 ## ⚙️ آماده‌سازی محیط (هر چت جدید)
 
 ```bash
-pip install -q imageio-ffmpeg numpy pillow
+pip install -q imageio-ffmpeg numpy pillow uharfbuzz freetype-py
 # فونت وزیرمتن (در مخزن نیست، باید دانلود شود)
 curl -sL -o /tmp/v.zip https://github.com/rastikerdar/vazirmatn/releases/download/v33.003/vazirmatn-v33.003.zip
 mkdir -p /home/user/fonttmp && unzip -qo /tmp/v.zip -d /home/user/fonttmp
@@ -105,6 +108,8 @@ build_all(cfg)
 ---
 
 ## ⚠️ نکات حیاتی
+
+- **شکل‌دهی متن:** اگر Pillow با libraqm نصب باشد، فارسی خودکار درست می‌شود. اگر نباشد (خطای `setting text direction ... not supported without libraqm`)، فایل `fatext.py` را کنار `make_reel.py` بگذار؛ موتور خودش از آن استفاده می‌کند و متن دوجهته (لاتین/عدد داخل جملهٔ فارسی) هم درست چیده می‌شود.
 
 - **فارسی:** فقط Pillow با libraqm و `language="fa", direction="rtl"`. هرگز `arabic_reshaper` یا `python-bidi`.
 - **فونت:** فقط وزیرمتن. DejaVu حروف فارسی را نمی‌چسباند.

@@ -9,6 +9,37 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from icons import icon
 import imageio_ffmpeg
 
+
+# ---------------- لایهٔ متن فارسی (HarfBuzz) ----------------
+try:                       # شکل‌دهی درست حروف چسبان فارسی
+    from fatext import FD as _FD
+    HAVE_FATEXT = True
+except Exception:          # نبود fatext → حالت قبلی (نیازمند libraqm)
+    _FD = None
+    HAVE_FATEXT = False
+
+
+def _draw(image, mode=None):
+    """جایگزین ImageDraw.Draw( ) که متن فارسی را درست می‌چیند."""
+    if HAVE_FATEXT:
+        return _FD(image, mode)
+    return ImageDraw.Draw(image, mode) if mode else ImageDraw.Draw(image)
+
+
+def _txt(image, xy, text, font, fill, anchor="mm"):
+    if HAVE_FATEXT:
+        return _FD(image).text(xy, text, font=font, fill=fill, anchor=anchor)
+    return ImageDraw.Draw(image, "RGBA").text(xy, text, font=font, fill=fill,
+                                       anchor=anchor, **KW)
+
+
+def _bbox(d, xy, text, font, anchor="mm"):
+    if HAVE_FATEXT:
+        return d.textbbox(xy, text, font=font, anchor=anchor)
+    return d.textbbox(xy, text, font=font, anchor=anchor, **KW)
+# -------------------------------------------------------------
+
+
 FF = imageio_ffmpeg.get_ffmpeg_exe()
 FTDIR = "/home/user/fonttmp/fonts/ttf/"
 BLACK = FTDIR + "Vazirmatn-Black.ttf"
@@ -31,7 +62,7 @@ PALETTES = {
                    ((170,24,36),(232,76,62)),   ((16,108,72),(60,176,108))],
     "wineamber": [((74,10,34),(158,28,62)), ((122,66,8),(214,148,32)),
                   ((92,14,44),(176,40,80)), ((136,80,10),(230,170,54))],
-    "aurora": [((124,58,237),(186,130,255)), ((14,165,183),(86,232,235)), ((236,72,120),(255,150,180)), ((234,179,8),(255,222,110))],
+    "aurora": [((124,58,236),(186,130,255)), ((14,165,183),(86,232,235)), ((236,72,120),(255,150,180)), ((234,179,8),(255,222,110))],
     "neonmosaic": [((0,200,190),(90,255,235)), ((255,90,120),(255,160,175)), ((255,190,40),(255,225,120)), ((140,110,255),(190,170,255))],
     "neonpurple": [((168,85,247),(216,160,255)), ((34,211,238),(140,245,255)), ((244,114,182),(255,175,215)), ((250,204,21),(255,232,120))],
     "neon": [((232,170,20),(255,214,70)), ((30,120,230),(90,190,255)),
@@ -119,11 +150,24 @@ def make_music(path="bgm.wav"):
     w.writeframes((out*32767).astype('<i2').tobytes()); w.close()
 
 
+
+def top_scrim(img, y_end=780, top_a=190, base_a=70):
+    """پردهٔ گرادیانی تیره در بالای کاور تا تیتر خوانا بماند."""
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    od = ImageDraw.Draw(ov)
+    for y in range(0, y_end):
+        f = y / float(y_end)
+        a = int(base_a + (top_a - base_a) * (1 - f) ** 1.25)
+        od.line([(0, y), (W, y)], fill=(12, 2, 28, a))
+    od.rectangle([0, y_end, W, H], fill=(12, 2, 28, base_a // 2))
+    return Image.alpha_composite(img.convert("RGBA"), ov).convert("RGB")
+
+
 def grad_text(base, txt, font, xy, c1, c2, anchor="mm"):
     tmp = Image.new("L", (W, H), 0)
-    ImageDraw.Draw(tmp).text(xy, txt, font=font, fill=255, anchor=anchor, **KW)
+    _txt(tmp, xy, txt, font=font, fill=255, anchor=anchor)
     bb = tmp.getbbox()
-    g = Image.new("RGB", (W, H), c2); gd = ImageDraw.Draw(g)
+    g = Image.new("RGB", (W, H), c2); gd = _draw(g)
     y0, y1 = bb[1], bb[3]
     for y in range(y0, y1+1):
         f = (y-y0)/max(1, y1-y0)
@@ -134,12 +178,11 @@ def grad_text(base, txt, font, xy, c1, c2, anchor="mm"):
 
 def make_cover(cfg):
     bg = cover_fill(Image.open("bg_cover.png").convert("RGB"), W, H)
-    cov = bg.copy(); d = ImageDraw.Draw(cov, "RGBA")
-    d.rectangle([0, 0, W, H], fill=(20, 0, 40, 70))
+    cov = top_scrim(bg); d = _draw(cov, "RGBA")
     fa = cfg["title_fa"]
     size = 120 if len(fa) <= 12 else (104 if len(fa) <= 16 else 88)
     grad_text(cov, fa, ImageFont.truetype(BLACK, size), (W/2, 330), (255, 236, 170), (212, 148, 20))
-    d = ImageDraw.Draw(cov, "RGBA")
+    d = _draw(cov, "RGBA")
     en = cfg["title_en"].upper()
     esz = 58 if len(en) <= 18 else (46 if len(en) <= 24 else 40)
     d.text((W/2, 460), en, font=ImageFont.truetype(BOLD, esz), fill=(255, 255, 255, 235), anchor="mm")
@@ -147,7 +190,7 @@ def make_cover(cfg):
     hw = min(430, 26 + len(sub)*17)
     d.rounded_rectangle([W/2-hw, 540, W/2+hw, 630], 45, fill=(255, 255, 255, 38),
                         outline=(255, 215, 120, 220), width=3)
-    d.text((W/2, 585), sub, font=ImageFont.truetype(BOLD, 44), fill=(255, 235, 190), anchor="mm", **KW)
+    d.text((W/2, 585), sub, font=ImageFont.truetype(BOLD, 44), fill=(255, 235, 190), anchor="mm")
 
     # cover illustration card
     ci = cfg.get("cover_ill", cfg["slides"][0][3])
@@ -155,10 +198,10 @@ def make_cover(cfg):
     cx0 = (W-cw)//2
     card = cover_fill(flatten(ci), cw, chh)
     mask = Image.new("L", (cw, chh), 0)
-    ImageDraw.Draw(mask).rounded_rectangle([0, 0, cw, chh], 48, fill=255)
+    _draw(mask).rounded_rectangle([0, 0, cw, chh], 48, fill=255)
     d.rounded_rectangle([cx0-10, cy0-10, cx0+cw+10, cy0+chh+10], 58, fill=(255, 255, 255, 95))
     cov.paste(card, (cx0, cy0), mask)
-    d = ImageDraw.Draw(cov, "RGBA")
+    d = _draw(cov, "RGBA")
     d.rounded_rectangle([W/2-210, 1855, W/2+210, 1895], 20, fill=(255, 255, 255, 70))
     cov.save("f_cover.png")
 
@@ -166,21 +209,21 @@ def make_cover(cfg):
 def make_slide(idx, cfg, PAL):
     num, fa, en, ill, items = cfg["slides"][idx]
     c1, c2 = PAL[idx]
-    img = Image.new("RGB", (W, H)); d = ImageDraw.Draw(img)
+    img = Image.new("RGB", (W, H)); d = _draw(img)
     for y in range(H):
         f = y/H
         d.line([(0, y), (W, y)], fill=tuple(int(c1[k]+(c2[k]-c1[k])*f) for k in range(3)))
-    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0)); od = ImageDraw.Draw(ov)
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0)); od = _draw(ov)
     for (cx, cy, r, a) in [(150,300,260,40),(950,1500,320,35),(900,250,180,30),(200,1700,240,28)]:
         od.ellipse([cx-r, cy-r, cx+r, cy+r], fill=(255, 255, 255, a))
     ov = ov.filter(ImageFilter.GaussianBlur(40))
     img = Image.alpha_composite(img.convert("RGBA"), ov).convert("RGB")
-    d = ImageDraw.Draw(img, "RGBA")
+    d = _draw(img, "RGBA")
 
     # ZONE 1: header
     d.ellipse([70, 108, 230, 268], fill=(255, 255, 255, 240))
-    d.text((150, 188), num, font=ImageFont.truetype(BLACK, 88), fill=c1, anchor="mm", **KW)
-    d.text((W-90, 150), fa, font=ImageFont.truetype(BLACK, 76), fill=(255, 255, 255), anchor="ra", **KW)
+    d.text((150, 188), num, font=ImageFont.truetype(BLACK, 88), fill=c1, anchor="mm")
+    d.text((W-90, 150), fa, font=ImageFont.truetype(BLACK, 76), fill=(255, 255, 255), anchor="ra")
     d.text((W-90, 252), en.upper(), font=ImageFont.truetype(BOLD, 32), fill=(255, 255, 255, 215), anchor="ra")
 
     # ZONE 2: text box right under the header
@@ -197,8 +240,8 @@ def make_slide(idx, cfg, PAL):
         d.ellipse([bx0+34, y+2, bx0+92, y+60], fill=(255, 255, 255, 240))
         ic_im = icon(ic, 38, (30, 22, 60))
         img.paste(ic_im, (bx0+44, int(y+12)), ic_im)
-        d = ImageDraw.Draw(img, "RGBA")
-        d.text((bx1-40, y+31), tx, font=fb, fill=(255, 255, 255), anchor="rm", **KW)
+        d = _draw(img, "RGBA")
+        d.text((bx1-40, y+31), tx, font=fb, fill=(255, 255, 255), anchor="rm")
         y += lh
 
     # ZONE 3: image card below the text, nothing drawn on it
@@ -207,26 +250,34 @@ def make_slide(idx, cfg, PAL):
     cx0 = (W-cw)//2
     card = cover_fill(flatten(ill), cw, chh)
     mask = Image.new("L", (cw, chh), 0)
-    ImageDraw.Draw(mask).rounded_rectangle([0, 0, cw, chh], 44, fill=255)
+    _draw(mask).rounded_rectangle([0, 0, cw, chh], 44, fill=255)
     d.rounded_rectangle([cx0-8, cy0-8, cx0+cw+8, cy0+chh+8], 52, fill=(255, 255, 255, 80))
     img.paste(card, (cx0, cy0), mask)
-    d = ImageDraw.Draw(img, "RGBA")
+    d = _draw(img, "RGBA")
     img.save(f"f_s{idx+1}.png")
 
 
 def make_cta(cfg):
     cta = cover_fill(Image.open("bg_cover.png").convert("RGB"), W, H).filter(ImageFilter.GaussianBlur(6))
-    d = ImageDraw.Draw(cta, "RGBA"); d.rectangle([0, 0, W, H], fill=(15, 0, 35, 150))
+    d = _draw(cta, "RGBA"); d.rectangle([0, 0, W, H], fill=(15, 0, 35, 150))
     grad_text(cta, "ذخیره کن!", ImageFont.truetype(BLACK, 120), (W/2, 660), (255, 240, 180), (215, 150, 25))
-    d = ImageDraw.Draw(cta, "RGBA")
+    d = _draw(cta, "RGBA")
     d.text((W/2, 810), cfg.get("cta", "این ویدیو را برای خانواده و کادر درمان بفرست"),
-           font=ImageFont.truetype(BOLD, 46), fill=(255, 255, 255, 240), anchor="mm", **KW)
+           font=ImageFont.truetype(BOLD, 46), fill=(255, 255, 255, 240), anchor="mm")
     d.rounded_rectangle([W/2-300, 930, W/2+300, 1035], 50, fill=(255, 255, 255, 235))
     d.text((W/2, 982), "ذخیره  •  اشتراک‌گذاری", font=ImageFont.truetype(BOLD, 42),
-           fill=(120, 20, 90), anchor="mm", **KW)
+           fill=(120, 20, 90), anchor="mm")
     d.text((W/2, 1160), "پیجم را دنبال کن برای آموزش‌های بیشتر",
-           font=ImageFont.truetype(REG, 38), fill=(255, 255, 255, 190), anchor="mm", **KW)
+           font=ImageFont.truetype(REG, 38), fill=(255, 255, 255, 190), anchor="mm")
     cta.save("f_cta.png")
+
+
+def _enc(args):
+    from concurrent.futures import ThreadPoolExecutor
+    def _run(a):
+        subprocess.run(a, check=True, capture_output=True)
+    with ThreadPoolExecutor(max_workers=3) as ex:
+        list(ex.map(_run, args))
 
 
 def render(cfg, target=25.0):
@@ -260,13 +311,18 @@ def render(cfg, target=25.0):
                        check=True, capture_output=True)
         parts.append(out)
 
-    seg("f_cover.png", V[0][0], round(V[0][1]+GAP, 2), "g0.mp4", True)
-    for i in range(1, 4):
-        seg(f"f_s{i}.png", V[i][0], round(V[i][1]+GAP, 2), f"g{i}.mp4", i % 2 == 0)
     d4 = V[4][1]; sp = round(d4*0.58, 2)
-    seg("f_s4.png", V[4][0], round(sp+0.08, 2), "g4.mp4", True)
-    seg("f_cta.png", V[4][0], round(d4-sp+CTA*0.55, 2), "g5.mp4", True, adelay=0,
-        atrim=f"{sp}:{d4}", fout=True)
+    jobs = [("f_cover.png", V[0][0], round(V[0][1]+GAP, 2), "g0.mp4", True),
+            ("f_s4.png", V[4][0], round(sp+0.08, 2), "g4.mp4", True)]
+    for i in range(1, 4):
+        jobs.append((f"f_s{i}.png", V[i][0], round(V[i][1]+GAP, 2), f"g{i}.mp4", i % 2 == 0))
+    jobs.append(("f_cta.png", V[4][0], round(d4-sp+CTA*0.55, 2), "g5.mp4",
+                 dict(zin=True, adelay=0, atrim=f"{sp}:{d4}", fout=True)))
+    for j in jobs:
+        if isinstance(j[4], bool):
+            seg(j[0], j[1], j[2], j[3], j[4])
+        else:
+            seg(j[0], j[1], j[2], j[3], **j[4])
 
     open("gl.txt", "w").write("".join(f"file '{os.path.abspath(p)}'\n" for p in parts))
     subprocess.run([FF, "-y", "-f", "concat", "-safe", "0", "-i", "gl.txt", "-c", "copy", "g_all.mp4"],
@@ -317,19 +373,19 @@ _NEON_ARC = (255, 140, 30, 26)
 
 def _neon_bg(seed_cols):
     img = Image.new("RGB", (W, H), _NEON_BASE)
-    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0)); od = ImageDraw.Draw(ov)
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0)); od = _draw(ov)
     spots = [(120, 240, 520), (960, 700, 460), (180, 1500, 560), (940, 1820, 480)]
     for i, (cx, cy, r) in enumerate(spots):
         c = seed_cols[i % len(seed_cols)]
         od.ellipse([cx-r, cy-r, cx+r, cy+r], fill=(c[0], c[1], c[2], 46))
     ov = ov.filter(ImageFilter.GaussianBlur(150))
     img = Image.alpha_composite(img.convert("RGBA"), ov)
-    d = ImageDraw.Draw(img, "RGBA")
+    d = _draw(img, "RGBA")
     if _NEON_MOSAIC:
         import random as _rnd
         r = _rnd.Random(7)
         mo = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-        md = ImageDraw.Draw(mo, "RGBA")
+        md = _draw(mo, "RGBA")
         TS = 108
         for gy in range(0, H, TS):
             for gx in range(0, W, TS):
@@ -342,7 +398,7 @@ def _neon_bg(seed_cols):
                                      outline=(c[0], c[1], c[2], 46), width=2)
         mo.putalpha(mo.getchannel("A").point(lambda v: int(v*0.42)))
         img = Image.alpha_composite(img, mo)
-        d = ImageDraw.Draw(img, "RGBA")
+        d = _draw(img, "RGBA")
     for k in range(5):
         y = 120 + k*430
         d.arc([-420, y, W+420, y+560], 200, 340, fill=_NEON_ARC, width=6)
@@ -362,23 +418,23 @@ def _neon_card(d, box, accent, radius=34, fill=(18, 18, 22, 240), glow=True):
 def neon_cover(cfg, PAL):
     a1 = PAL[0][1]; a2 = PAL[1][1]
     cov = _neon_bg([PAL[0][1], PAL[1][1], PAL[2][1], PAL[3][1]])
-    d = ImageDraw.Draw(cov, "RGBA")
+    d = _draw(cov, "RGBA")
 
     fa = cfg["title_fa"]
     size = 118 if len(fa) <= 13 else (100 if len(fa) <= 18 else 86)
     f = ImageFont.truetype(BLACK, size)
-    bb = d.textbbox((W/2, 300), fa, font=f, anchor="mm", **KW)
+    bb = _bbox(d, (W/2, 300), fa, f, "mm")
     pad = 34
     _neon_card(d, [bb[0]-pad, bb[1]-22, bb[2]+pad, bb[3]+22], a1, 28,
                fill=(a1[0], a1[1], a1[2], 250), glow=True)
-    d.text((W/2, 300), fa, font=f, fill=(10, 10, 12), anchor="mm", **KW)
+    d.text((W/2, 300), fa, font=f, fill=(10, 10, 12), anchor="mm")
 
     sub = cfg["subtitle"]
     fs = ImageFont.truetype(BOLD, 46)
-    bb = d.textbbox((W/2, 432), sub, font=fs, anchor="mm", **KW)
+    bb = _bbox(d, (W/2, 432), sub, fs, "mm")
     _neon_card(d, [bb[0]-30, bb[1]-18, bb[2]+30, bb[3]+18], a2, 24,
                fill=(16, 16, 20, 235), glow=True)
-    d.text((W/2, 432), sub, font=fs, fill=(255, 255, 255), anchor="mm", **KW)
+    d.text((W/2, 432), sub, font=fs, fill=(255, 255, 255), anchor="mm")
 
     en = cfg["title_en"].upper()
     d.text((W/2, 528), en, font=ImageFont.truetype(BOLD, 34),
@@ -389,11 +445,11 @@ def neon_cover(cfg, PAL):
     cx0 = (W-cw)//2
     card = cover_fill(flatten(ci), cw, chh)
     mask = Image.new("L", (cw, chh), 0)
-    ImageDraw.Draw(mask).rounded_rectangle([0, 0, cw, chh], 40, fill=255)
+    _draw(mask).rounded_rectangle([0, 0, cw, chh], 40, fill=255)
     _neon_card(d, [cx0-14, cy0-14, cx0+cw+14, cy0+chh+14], a1, 52,
                fill=(14, 14, 18, 255), glow=True)
     cov.paste(card, (cx0, cy0), mask)
-    d = ImageDraw.Draw(cov, "RGBA")
+    d = _draw(cov, "RGBA")
 
     tags = cfg.get("cover_tags", [])[:4]
     n_t = len(tags)
@@ -401,10 +457,10 @@ def neon_cover(cfg, PAL):
     fx = ImageFont.truetype(BOLD, 34)
     for i, t in enumerate(tags):
         col = PAL[i % 4][1]
-        bb = d.textbbox((W/2, ty), t, font=fx, anchor="mm", **KW)
+        bb = _bbox(d, (W/2, ty), t, fx, "mm")
         _neon_card(d, [bb[0]-26, bb[1]-14, bb[2]+26, bb[3]+14], col, 22,
                    fill=(16, 16, 20, 240), glow=False)
-        d.text((W/2, ty), t, font=fx, fill=col, anchor="mm", **KW)
+        d.text((W/2, ty), t, font=fx, fill=col, anchor="mm")
         ty += 66
     cov.save("f_cover.png")
 
@@ -413,14 +469,14 @@ def neon_slide(idx, cfg, PAL):
     num, fa, en, ill, items = cfg["slides"][idx]
     acc = PAL[idx][1]
     img = _neon_bg([PAL[idx][1], PAL[(idx+1) % 4][1], PAL[idx][0], PAL[(idx+2) % 4][1]])
-    d = ImageDraw.Draw(img, "RGBA")
+    d = _draw(img, "RGBA")
 
     # header
     _neon_card(d, [70, 104, 238, 272], acc, 46, fill=(acc[0], acc[1], acc[2], 250))
     d.text((154, 188), num, font=ImageFont.truetype(BLACK, 86),
-           fill=(10, 10, 12), anchor="mm", **KW)
+           fill=(10, 10, 12), anchor="mm")
     d.text((W-90, 148), fa, font=ImageFont.truetype(BLACK, 74),
-           fill=(255, 255, 255), anchor="ra", **KW)
+           fill=(255, 255, 255), anchor="ra")
     d.text((W-90, 250), en.upper(), font=ImageFont.truetype(BOLD, 30),
            fill=(acc[0], acc[1], acc[2], 245), anchor="ra")
 
@@ -443,8 +499,8 @@ def neon_slide(idx, cfg, PAL):
         d.ellipse([104, y+27, 162, y+85], fill=col)
         ic_im = icon(ic, 36, (12, 12, 14))
         img.paste(ic_im, (115, int(y+38)), ic_im)
-        d = ImageDraw.Draw(img, "RGBA")
-        d.text((W-112, y+bh/2), tx, font=fb, fill=(255, 255, 255), anchor="rm", **KW)
+        d = _draw(img, "RGBA")
+        d.text((W-112, y+bh/2), tx, font=fb, fill=(255, 255, 255), anchor="rm")
         y += bh + gap
 
     cy0 = y + 28
@@ -453,7 +509,7 @@ def neon_slide(idx, cfg, PAL):
     cx0 = (W-cw)//2
     card = cover_fill(flatten(ill), cw, chh)
     mask = Image.new("L", (cw, chh), 0)
-    ImageDraw.Draw(mask).rounded_rectangle([0, 0, cw, chh], 40, fill=255)
+    _draw(mask).rounded_rectangle([0, 0, cw, chh], 40, fill=255)
     _neon_card(d, [cx0-14, cy0-14, cx0+cw+14, cy0+chh+14], acc, 52,
                fill=(14, 14, 18, 255), glow=True)
     img.paste(card, (cx0, cy0), mask)
@@ -463,17 +519,17 @@ def neon_slide(idx, cfg, PAL):
 def neon_cta(cfg, PAL):
     a1 = PAL[0][1]; a2 = PAL[1][1]
     cta = _neon_bg([PAL[0][1], PAL[1][1], PAL[2][1], PAL[3][1]])
-    d = ImageDraw.Draw(cta, "RGBA")
+    d = _draw(cta, "RGBA")
     f = ImageFont.truetype(BLACK, 122)
-    bb = d.textbbox((W/2, 700), "ذخیره کن!", font=f, anchor="mm", **KW)
+    bb = d.textbbox((W/2, 700), "ذخیره کن!", font=f, anchor="mm")
     _neon_card(d, [bb[0]-44, bb[1]-28, bb[2]+44, bb[3]+28], a1, 34,
                fill=(a1[0], a1[1], a1[2], 250))
-    d.text((W/2, 700), "ذخیره کن!", font=f, fill=(10, 10, 12), anchor="mm", **KW)
+    d.text((W/2, 700), "ذخیره کن!", font=f, fill=(10, 10, 12), anchor="mm")
     d.text((W/2, 866), cfg.get("cta", ""), font=ImageFont.truetype(BOLD, 44),
-           fill=(255, 255, 255, 240), anchor="mm", **KW)
+           fill=(255, 255, 255, 240), anchor="mm")
     _neon_card(d, [W/2-320, 968, W/2+320, 1078], a2, 44, fill=(16, 16, 20, 240))
     d.text((W/2, 1023), "ذخیره  •  اشتراک‌گذاری", font=ImageFont.truetype(BOLD, 42),
-           fill=a2, anchor="mm", **KW)
+           fill=a2, anchor="mm")
     d.text((W/2, 1210), "پیجم را دنبال کن برای آموزش‌های بیشتر",
-           font=ImageFont.truetype(REG, 38), fill=(255, 255, 255, 185), anchor="mm", **KW)
+           font=ImageFont.truetype(REG, 38), fill=(255, 255, 255, 185), anchor="mm")
     cta.save("f_cta.png")

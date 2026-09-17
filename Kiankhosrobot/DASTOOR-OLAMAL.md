@@ -67,9 +67,20 @@
 - در انتها بپرس «رسید؟» — موفق بودن خروجی ابزار به معنای دیده شدن لینک نیست.
 - **قانون قطعی کاربر:** در **انتهای هر پیام تحویل**، همیشه و بدون استثنا سه کادر لینک (`present_file`) پشت سر هم ارائه شود: reel.mp4 ، cover.png ، caption.txt — حتی اگر قبلاً در همان پیام باز شده باشند.
 
+## نسخه ۳.۱ — به‌روزرسانی (شهریور ۱۴۰۵)
+- **`toolkit/fatext.py` اضافه شد:** موتور شکل‌دهی متن فارسی با HarfBuzz + FreeType که جای Raqm را می‌گیرد (اتصال حروف، لیگاتور، کرنینگ، راست‌به‌چپ و متن دوجهته چپ‌به‌راست).
+  اگر libraqm روی سیستم نصب نباشد، `make_reel.py` خودش از `fatext` استفاده می‌کند؛ در غیر این‌صورت رفتار قبلی حفظ می‌شود.
+- **متن دوجهته:** عبارت‌های لاتین و اعداد (مثل `DSM-5`، `ADHD`، `۱۲`) به‌صورت خودکار در جای درست و بدون برعکس شدن رندر می‌شوند.
+- **کاور:** پردهٔ گرادیانی تیره (`top_scrim`) بالای کاور اضافه شد تا تیتر همیشه خوانا باشد.
+- **سرعت ساخت:** صحنه‌های ویدیویی موازی انکود می‌شوند (`_enc`).
+- نام پالت آیرورا برای سازگاری با پایتون‌های قدیمی‌تر امن شد و کلید `aurora` بدون تغییر باقی است.
+- **فونت:** هر چت جدید فونت وزیرمتن را دانلود کن؛ مسیر پیش‌فرض `FTDIR = /home/user/fonttmp/fonts/ttf/` است.
+- **لوکال‌سازی (sandbox):** در محیط‌هایی که Pillow بدون libraqm است، دستور نصب سریع: `pip install uharfbuzz freetype-py` (به‌همراه `imageio-ffmpeg numpy pillow`).
+- برای هر موضوع فقط `topic.py` نوشته می‌شود؛ نمونه در `toolkit/topic_adhd.py` نگهداری می‌شود.
+
 ## منبع دائمی کدها (گیت‌هاب)
 - مخزن رسمی: https://github.com/kindlykaren48-del/Kiankhosrobot
-- مسیر فایل‌ها: `Kiankhosrobot/toolkit/make_reel.py` ، `Kiankhosrobot/toolkit/icons.py` ، `Kiankhosrobot/DASTOOR-OLAMAL.md` ، `Kiankhosrobot/README.md`
+- مسیر فایل‌ها: `Kiankhosrobot/toolkit/make_reel.py` ، `Kiankhosrobot/toolkit/icons.py` ، `Kiankhosrobot/toolkit/fatext.py` ، `Kiankhosrobot/DASTOOR-OLAMAL.md` ، `Kiankhosrobot/README.md`
 - در هر چت جدید: این فایل‌ها را با curl از raw.githubusercontent دانلود کن، نه از آرشیو.
 - فونت وزیرمتن در مخزن نیست — هر بار جداگانه دانلود شود.
 - **پس از هر تغییر در موتور یا افزودن پالت جدید، فایل `make_reel.py` به‌روز را در یک کادر لینک به کاربر تحویل بده و یادآوری کن روی گیت‌هاب آپلود کند.**
