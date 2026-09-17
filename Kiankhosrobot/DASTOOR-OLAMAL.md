@@ -66,3 +66,11 @@
 - در همان پیام اول مسیر فایل‌ها را بنویس: /home/user/reel.mp4 ، /home/user/cover.png ، /home/user/caption.txt
 - در انتها بپرس «رسید؟» — موفق بودن خروجی ابزار به معنای دیده شدن لینک نیست.
 - **قانون قطعی کاربر:** در **انتهای هر پیام تحویل**، همیشه و بدون استثنا سه کادر لینک (`present_file`) پشت سر هم ارائه شود: reel.mp4 ، cover.png ، caption.txt — حتی اگر قبلاً در همان پیام باز شده باشند.
+
+## منبع دائمی کدها (گیت‌هاب)
+- مخزن رسمی: https://github.com/kindlykaren48-del/Kiankhosrobot
+- مسیر فایل‌ها: `Kiankhosrobot/toolkit/make_reel.py` ، `Kiankhosrobot/toolkit/icons.py` ، `Kiankhosrobot/DASTOOR-OLAMAL.md` ، `Kiankhosrobot/README.md`
+- در هر چت جدید: این فایل‌ها را با curl از raw.githubusercontent دانلود کن، نه از آرشیو.
+- فونت وزیرمتن در مخزن نیست — هر بار جداگانه دانلود شود.
+- **پس از هر تغییر در موتور یا افزودن پالت جدید، فایل `make_reel.py` به‌روز را در یک کادر لینک به کاربر تحویل بده و یادآوری کن روی گیت‌هاب آپلود کند.**
+- گیت‌هاب فایل ZIP را باز نمی‌کند؛ همیشه فایل‌ها را خام و جداگانه تحویل بده.
