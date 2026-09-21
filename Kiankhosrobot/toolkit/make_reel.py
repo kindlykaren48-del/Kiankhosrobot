@@ -52,7 +52,22 @@ def _bbox(d, xy, text, font, anchor="mm"):
 
 
 FF = imageio_ffmpeg.get_ffmpeg_exe()
-FTDIR = "/home/user/fonttmp/fonts/ttf/"
+def _find_font_dir():
+    """پوشهٔ فونت وزیرمتن را در مسیرهای محتمل پیدا می‌کند (قابل حمل بین محیط‌ها)."""
+    import os as _os
+    cands = [_os.environ.get("REEL_FONTS", ""),
+             "/home/user/fonttmp/fonts/ttf/",
+             _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.dirname(
+                 _os.path.abspath(__file__)))), "fonttmp", "fonts", "ttf"),
+             "/home/user/Kiankhosrobot/fonttmp/fonts/ttf/",
+             _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "fonttmp", "fonts", "ttf")]
+    for c in cands:
+        if c and _os.path.isfile(_os.path.join(c, "Vazirmatn-Bold.ttf")):
+            return c if c.endswith("/") else c + "/"
+    return cands[1]
+
+
+FTDIR = _find_font_dir()
 BLACK = FTDIR + "Vazirmatn-Black.ttf"
 BOLD = FTDIR + "Vazirmatn-Bold.ttf"
 REG = FTDIR + "Vazirmatn-Medium.ttf"
