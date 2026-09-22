@@ -52,7 +52,22 @@ def _bbox(d, xy, text, font, anchor="mm"):
 
 
 FF = imageio_ffmpeg.get_ffmpeg_exe()
-FTDIR = "/home/user/fonttmp/fonts/ttf/"
+def _find_font_dir():
+    """پوشهٔ فونت وزیرمتن را در مسیرهای محتمل پیدا می‌کند (قابل حمل بین محیط‌ها)."""
+    import os as _os
+    cands = [_os.environ.get("REEL_FONTS", ""),
+             "/home/user/fonttmp/fonts/ttf/",
+             _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.dirname(
+                 _os.path.abspath(__file__)))), "fonttmp", "fonts", "ttf"),
+             "/home/user/Kiankhosrobot/fonttmp/fonts/ttf/",
+             _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "fonttmp", "fonts", "ttf")]
+    for c in cands:
+        if c and _os.path.isfile(_os.path.join(c, "Vazirmatn-Bold.ttf")):
+            return c if c.endswith("/") else c + "/"
+    return cands[1]
+
+
+FTDIR = _find_font_dir()
 BLACK = FTDIR + "Vazirmatn-Black.ttf"
 BOLD = FTDIR + "Vazirmatn-Bold.ttf"
 REG = FTDIR + "Vazirmatn-Medium.ttf"
@@ -323,10 +338,13 @@ def render(cfg, target=25.0):
         parts.append(out)
 
     d4 = V[4][1]; sp = round(d4*0.58, 2)
-    jobs = [("f_cover.png", V[0][0], round(V[0][1]+GAP, 2), "g0.mp4", True),
-            ("f_s4.png", V[4][0], round(sp+0.08, 2), "g4.mp4", True)]
+    # ترتیب پخش: کاور → اسلاید ۱ تا ۴ (به ترتیب شماره) → CTA
+    # پیش‌تر اسلاید ۴ بلافاصله بعد از کاور می‌آمد و شماره‌ها روی تصویر
+    # به‌صورت ۴، ۱، ۲، ۳ دیده می‌شدند که با نریشن و شماره‌گذاری نمی‌خواند.
+    jobs = [("f_cover.png", V[0][0], round(V[0][1]+GAP, 2), "g0.mp4", True)]
     for i in range(1, 4):
         jobs.append((f"f_s{i}.png", V[i][0], round(V[i][1]+GAP, 2), f"g{i}.mp4", i % 2 == 0))
+    jobs.append(("f_s4.png", V[4][0], round(sp+0.08, 2), "g4.mp4", True))
     jobs.append(("f_cta.png", V[4][0], round(d4-sp+CTA*0.55, 2), "g5.mp4",
                  dict(zin=True, adelay=0, atrim=f"{sp}:{d4}", fout=True)))
     for j in jobs:
