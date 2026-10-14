@@ -63,18 +63,26 @@ def _cls(ch: str) -> str:
     return "W"              # فاصله، نقطه‌گذاری، نیم‌فاصله، نماد
 
 
+def _is_digit(ch: str) -> bool:
+    o = ord(ch)
+    return 0x30 <= o <= 0x39 or 0x0660 <= o <= 0x0669 or 0x06F0 <= o <= 0x06F9
+
+
 def bidi_runs(text: str):
     """متن را به قطعه‌های هم‌جهت تقسیم می‌کند و به ترتیب دیداری (چپ→راست)
     برمی‌گرداند: فهرستی از (متن_قطعه, rtl)."""
     if not text:
         return []
     cls = [_cls(c) for c in text]
-    # جهت پایه: نخستین نویسهٔ قوی
-    base = "R"
-    for c in cls:
-        if c in ("R", "L"):
+    # جهت پایه: نخستین حرفِ قوی (طبق UAX#9 ارقام «ضعیف»اند و جهت پاراگراف را تعیین نمی‌کنند؛
+    # وگرنه جمله‌ای مثل «۵ تا ۱۰ دقیقه» چپ‌به‌راست چیده می‌شود)
+    base = None
+    for ch, c in zip(text, cls):
+        if c == "R" or (c == "L" and not _is_digit(ch)):
             base = c
             break
+    if base is None:
+        base = "R" if _is_rtl(text) or any(_is_digit(ch) and ord(ch) > 0x7F for ch in text) else "L"
     # حل نویسه‌های ضعیف (فاصله و نقطه‌گذاری)
     out = cls[:]
     i = 0
