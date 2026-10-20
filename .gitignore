@@ -10,3 +10,13 @@ plog*
 
 # موتور استیکمن — فایل‌های میانی
 toolkit/tmp_*/
+
+# محیط پایتون و فایل‌های موقت ریل
+.venv/
+reels/tmp/
+reels/**/tmp/
+reels/assets/
+reels/carousel/**/*.png
+reels/*.mp4
+reels/*.png
+reels/narration/
