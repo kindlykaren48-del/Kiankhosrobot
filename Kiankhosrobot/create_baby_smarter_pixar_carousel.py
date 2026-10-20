@@ -41,12 +41,14 @@ def ellipse(d,box,fill=None,outline=None,width=1):
 def line(d,pts,fill,width=2):
     d.line([(sc(x),sc(y)) for x,y in pts],fill=fill,width=sc(width),joint="curve")
 
-def cover_crop(path, target=(W,H)):
+def cover_crop(path, target=(W,H), zoom=1.0, focus=(0.5,0.5)):
     im=Image.open(path).convert("RGB")
-    tw,th=target; scale=max(tw/im.width,th/im.height)
+    tw,th=target; scale=max(tw/im.width,th/im.height)*zoom
     nw,nh=round(im.width*scale),round(im.height*scale)
     im=im.resize((nw,nh),Image.Resampling.LANCZOS)
-    l=(nw-tw)//2; t=(nh-th)//2
+    fx,fy=focus
+    l=max(0,min(nw-tw,round(fx*nw-tw/2)))
+    t=max(0,min(nh-th,round(fy*nh-th/2)))
     return im.crop((l,t,l+tw,t+th)).convert("RGBA")
 
 def vertical_gradient(size, stops):
@@ -66,11 +68,11 @@ def vertical_gradient(size, stops):
     return grad
 
 def topbar(im,page,accent):
+    """Minimal page marker; intentionally no category or series name."""
     d=ImageDraw.Draw(im,"RGBA")
-    rect(d,(52,42,1028,116),fill=rgba(NAVY,168),outline=rgba(WHITE,45),width=1,radius=37)
-    text(im,(92,79),f"{page:02d} / 05",16,accent,F_BLACK,"lm")
-    text(im,(987,79),"رشد نوزاد • اسطوره‌شکنی",15,WHITE,F_BOLD,"rm")
-    ellipse(d,(965,65,989,89),fill=rgba(accent))
+    rect(d,(52,42,190,110),fill=rgba(NAVY,178),outline=rgba(WHITE,55),width=1,radius=34)
+    ellipse(d,(72,65,94,87),fill=rgba(accent))
+    text(im,(116,76),f"{page:02d} / 05",15,WHITE,F_BLACK,"lm")
 
 def dots(im,page):
     d=ImageDraw.Draw(im,"RGBA")
@@ -91,17 +93,17 @@ def glass_card(im,box,color=TEAL,alpha=205):
     rect(d,(x2-14,y1+22,x2-7,y2-22),fill=rgba(color),radius=4)
 
 def slide1():
-    im=cover_crop(ASSETS/"scene_01.png")
-    # Dark cinematic text zone over the deliberately quiet upper-right field.
-    scr=vertical_gradient((W,H),[(0.0,rgba(NAVY,210)),(0.42,rgba(NAVY,75)),(0.72,rgba(NAVY,10)),(1.0,rgba(NAVY,135))])
+    # Dedicated cover art keeps the baby large without previewing any lesson items.
+    im=cover_crop(ASSETS/"scene_cover.png",zoom=1.03,focus=(0.50,0.50))
+    scr=vertical_gradient((W,H),[(0.0,rgba(NAVY,225)),(0.38,rgba(NAVY,92)),(0.66,rgba(NAVY,0)),(1.0,rgba(NAVY,150))])
     im=Image.alpha_composite(im,scr)
     d=ImageDraw.Draw(im,"RGBA")
     topbar(im,1,YELLOW)
-    label(im,1004,160,"عنوان ۱ از فهرست ۸۰ تایی",TEAL)
-    text(im,(1006,250),"پنج کاری که نوزادت را",48,WHITE,F_BLACK,"rt")
-    text(im,(1006,320),"«باهوش‌تر» نمی‌کند",62,YELLOW,F_BLACK,"rt")
-    rect(d,(390,1162,1008,1242),fill=rgba(CORAL,238),radius=24)
-    text(im,(976,1201),"این پنج کار فقط پول دور ریختنه",25,WHITE,F_BLACK,"rm")
+    text(im,(1010,170),"پنج کاری که",68,WHITE,F_BLACK,"rt")
+    text(im,(1010,258),"نوزادت را",72,WHITE,F_BLACK,"rt")
+    text(im,(1010,350),"«باهوش‌تر» نمی‌کند",78,YELLOW,F_BLACK,"rt")
+    rect(d,(778,1168,1010,1238),fill=rgba(CORAL,240),radius=24)
+    text(im,(982,1203),"ورق بزن",23,WHITE,F_BLACK,"rm")
     dots(im,1)
     return im
 
@@ -112,25 +114,26 @@ def slide2():
     topbar(im,2,PURPLE); label(im,1004,150,"شماره ۱ و ۲",PURPLE)
     text(im,(1006,220),"گران‌تر و زودتر،",48,WHITE,F_BLACK,"rt")
     text(im,(1006,283),"باهوش‌تر نمی‌کند",54,YELLOW,F_BLACK,"rt")
-    glass_card(im,(55,1035,1025,1258),PURPLE,218)
-    text(im,(972,1070),"اسباب‌بازی «آموزشی» گران",26,YELLOW,F_BLACK,"rt")
-    text(im,(972,1115),"و فلش‌کارتِ اجباری، میان‌بُر افزایش هوش نیستند.",21,WHITE,F_BOLD,"rt")
-    text(im,(972,1171),"بازی ساده با یک بزرگسالِ پاسخ‌گو، ارزشمندتر است.",20,TEAL,F_MED,"rt")
+    glass_card(im,(55,988,1025,1258),PURPLE,228)
+    text(im,(972,1025),"اسباب‌بازی گران و فلش‌کارت اجباری",30,YELLOW,F_BLACK,"rt")
+    text(im,(972,1085),"میان‌بُر افزایش هوش نیستند.",28,WHITE,F_BLACK,"rt")
+    text(im,(972,1148),"بازی ساده با یک بزرگسالِ پاسخ‌گو",25,TEAL,F_BLACK,"rt")
+    text(im,(972,1194),"برای رشد، ارزشمندتر است.",25,TEAL,F_BLACK,"rt")
     dots(im,2); return im
 
 def slide3():
     im=cover_crop(ASSETS/"scene_03.png")
     # Original image has a generous cream lower field.
     d=ImageDraw.Draw(im,"RGBA"); topbar(im,3,CORAL); label(im,1004,150,"شماره ۳",CORAL)
-    glass_card(im,(56,765,1024,1255),TEAL,220)
-    text(im,(970,812),"اپ و ویدئوی",42,WHITE,F_BLACK,"rt")
-    text(im,(970,872),"«تقویت مغز نوزاد»؟",47,YELLOW,F_BLACK,"rt")
-    line(d,[(625,940),(970,940)],rgba(CORAL),5)
-    text(im,(970,982),"صفحه‌نمایش جای تعامل زنده را نمی‌گیرد.",25,WHITE,F_BOLD,"rt")
-    text(im,(970,1040),"چهره، صدا و پاسخ واقعی شما",24,TEAL,F_BLACK,"rt")
-    text(im,(970,1085),"برای یادگیری مهم‌تر است.",24,TEAL,F_BLACK,"rt")
-    rect(d,(615,1148,970,1218),fill=rgba(CORAL,235),radius=20)
-    text(im,(943,1183),"تعامل کن، فقط پخش نکن",21,WHITE,F_BLACK,"rm")
+    glass_card(im,(56,745,1024,1255),TEAL,230)
+    text(im,(970,790),"اپ و ویدئوی",46,WHITE,F_BLACK,"rt")
+    text(im,(970,856),"«تقویت مغز نوزاد»؟",51,YELLOW,F_BLACK,"rt")
+    line(d,[(560,930),(970,930)],rgba(CORAL),6)
+    text(im,(970,970),"صفحه‌نمایش جای تعامل زنده را نمی‌گیرد.",29,WHITE,F_BLACK,"rt")
+    text(im,(970,1035),"چهره، صدا و پاسخ واقعی شما",28,TEAL,F_BLACK,"rt")
+    text(im,(970,1088),"برای یادگیری مهم‌تر است.",28,TEAL,F_BLACK,"rt")
+    rect(d,(565,1150,970,1225),fill=rgba(CORAL,240),radius=20)
+    text(im,(940,1187),"تعامل کن، فقط پخش نکن",24,WHITE,F_BLACK,"rm")
     dots(im,3); return im
 
 def slide4():
@@ -139,10 +142,11 @@ def slide4():
     im=Image.alpha_composite(im,scr); topbar(im,4,YELLOW); label(im,1004,150,"شماره ۴ و ۵",YELLOW)
     text(im,(1006,220),"موسیقی و مکمل؛",48,WHITE,F_BLACK,"rt")
     text(im,(1006,282),"نه میان‌بُرِ IQ",53,CORAL,F_BLACK,"rt")
-    glass_card(im,(55,1038,1025,1258),YELLOW,220)
-    text(im,(972,1071),"موسیقی لذت‌بخش است؛ معجزهٔ هوش نیست.",23,WHITE,F_BOLD,"rt")
-    text(im,(972,1126),"مکملِ بدون نیاز پزشکی، هوش را بیشتر نمی‌کند.",22,YELLOW,F_BLACK,"rt")
-    text(im,(972,1183),"مکمل فقط طبق توصیهٔ پزشک و متناسب با شرایط نوزاد.",19,TEAL,F_BOLD,"rt")
+    glass_card(im,(55,986,1025,1258),YELLOW,230)
+    text(im,(972,1025),"موسیقی لذت‌بخش است؛",29,WHITE,F_BLACK,"rt")
+    text(im,(972,1078),"اما معجزهٔ هوش نیست.",29,WHITE,F_BLACK,"rt")
+    text(im,(972,1136),"مکملِ بدون نیاز پزشکی، هوش را بیشتر نمی‌کند.",25,YELLOW,F_BLACK,"rt")
+    text(im,(972,1192),"مکمل فقط طبق توصیهٔ پزشک و شرایط نوزاد.",22,TEAL,F_BLACK,"rt")
     dots(im,4); return im
 
 def slide5():
@@ -191,7 +195,7 @@ def main():
 
 #رشد_نوزاد #هوش_نوزاد #بازی_با_نوزاد #والدگری #تربیت_کودک #پزشک_اطفال
 """,encoding="utf-8")
-    (OUT/"README.md").write_text("""# کاروسل شماره ۱ — نسخهٔ مولتی‌کالر سه‌بعدی
+    (OUT/"README.md").write_text("""# کاروسل مولتی‌کالر سه‌بعدی
 
 - عنوان: ۵ کاری که نوزادت را «باهوش‌تر» نمی‌کند
 - ۵ اسلاید ۴:۵ برای پست اینستاگرام
