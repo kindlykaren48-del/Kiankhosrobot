@@ -69,12 +69,12 @@ def bidi_runs(text: str):
     if not text:
         return []
     cls = [_cls(c) for c in text]
-    # جهت پایه: نخستین نویسهٔ قوی
-    base = "R"
-    for c in cls:
-        if c in ("R", "L"):
-            base = c
-            break
+    # جهت پایه: اگر متن فارسی/عربی دارد، پاراگراف راست‌به‌چپ است.
+    # (رقم و لاتین نباید جهت پایهٔ خطِ فارسی را برگردانند)
+    if any(c == "R" for c in cls):
+        base = "R"
+    else:
+        base = "L"
     # حل نویسه‌های ضعیف (فاصله و نقطه‌گذاری)
     out = cls[:]
     i = 0
