@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>استودیو تولید محتوا — دکتر کیانوش سالاریان</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#22384a; --muted:#6b7f8f; --card:#fff;
+    --sage:#487A68; --warm:#D65C4C; --mint:#3A7084; --night:#C47A3E; --clay:#B06048;
+    --line:#e7ddd0; --radius:18px;
+  }
+  *{box-sizing:border-box}
+  body{font-family:'Vazirmatn',Tahoma,sans-serif;margin:0;color:var(--ink);
+       background:linear-gradient(180deg,#FDF6EC 0%,#F3EFE6 45%,#E9F0E9 100%);min-height:100vh}
+  .wrap{max-width:840px;margin:0 auto;padding:18px 14px 48px}
+  header{background:linear-gradient(120deg,var(--sage),var(--mint) 55%,var(--night));
+         color:#fff;border-radius:22px;padding:26px 22px 22px;text-align:center;
+         box-shadow:0 10px 30px rgba(58,112,132,.25)}
+  header h1{margin:0;font-size:26px;font-weight:900}
+  header p{margin:6px 0 0;opacity:.92;font-size:14px}
+  .palbar{display:flex;gap:6px;justify-content:center;margin-top:14px}
+  .palbar span{width:46px;height:10px;border-radius:6px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+        padding:18px;margin-top:16px;box-shadow:0 4px 16px rgba(90,70,56,.07)}
+  .card h2{margin:0 0 6px;font-size:18px;font-weight:900}
+  .hint{color:var(--muted);font-size:13px;margin:0 0 12px}
+  label{display:block;font-weight:700;font-size:14px;margin:12px 0 6px}
+  textarea,input[type=text]{width:100%;border:2px solid var(--line);border-radius:12px;
+        padding:12px;font-family:inherit;font-size:15px;background:#fffdf9;color:var(--ink)}
+  textarea:focus,input[type=text]:focus{outline:none;border-color:var(--sage)}
+  .err{border-color:#D65C4C !important;background:#FFF3F1 !important}
+  .check{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;margin-top:12px;cursor:pointer}
+  .check input{width:20px;height:20px;accent-color:var(--sage)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:640px){.two{grid-template-columns:1fr}}
+  .pick{background:#FBF7F0;border:2px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  .pick .num{font-size:44px;font-weight:900;line-height:1.1;color:var(--sage)}
+  .pick.warm .num{color:var(--clay)}
+  .pick .unit{color:var(--muted);font-size:13px;font-weight:700}
+  input[type=range]{width:100%;margin-top:10px;accent-color:var(--sage);height:28px}
+  .pick.warm input[type=range]{accent-color:var(--clay)}
+  .step{display:flex;gap:10px;justify-content:center;margin-top:8px}
+  .step button{width:48px;height:48px;border-radius:50%;border:none;font-size:24px;font-weight:900;
+        background:var(--sage);color:#fff;cursor:pointer}
+  .pick.warm .step button{background:var(--clay)}
+  .est{margin-top:14px;border-radius:12px;padding:12px 14px;font-size:14px;line-height:2;
+       background:#EFF6F1;border:1.5px solid #BFD8C9}
+  .est.warn{background:#FFF3E8;border-color:#F1CDA8}
+  .est b{font-weight:900}
+  .badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:700;vertical-align:middle}
+  .ok{background:#DFF0E5;color:#226646}.warnb{background:#FFE3C7;color:#9A5B16}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .lock{background:#FBF7F0;border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;font-size:13.5px}
+  .lock b{font-weight:900}
+  .swatches{display:flex;gap:5px;margin-top:7px}
+  .swatches span{flex:1;height:16px;border-radius:5px;border:1px solid rgba(0,0,0,.06)}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  button.main{flex:1;min-width:200px;background:var(--sage);color:#fff;border:none;cursor:pointer;
+        padding:15px;border-radius:14px;font-family:inherit;font-size:17px;font-weight:900}
+  button.ghost{flex:1;min-width:160px;background:#fff;color:var(--sage);border:2px solid var(--sage);
+        cursor:pointer;padding:13px;border-radius:14px;font-family:inherit;font-size:15px;font-weight:800}
+  #out{background:#1E3038;color:#EAF3EE;border:none;min-height:230px;font-size:13.5px;line-height:1.9}
+  #toast{position:fixed;bottom:22px;right:50%;transform:translateX(50%) translateY(90px);
+        background:#22384a;color:#fff;padding:12px 22px;border-radius:30px;font-weight:700;font-size:14px;
+        transition:transform .35s;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:9;text-align:center;max-width:92vw}
+  #toast.show{transform:translateX(50%) translateY(0)}
+  footer{text-align:center;color:var(--muted);font-size:12.5px;margin-top:20px;line-height:1.9}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>🎬 استودیو تولید محتوا</h1>
+    <p>دکتر کیانوش سالاریان — سفارش کاروسل صدا-تصویری اینستاگرام</p>
+    <div class="palbar">
+      <span style="background:#487A68"></span><span style="background:#D65C4C"></span>
+      <span style="background:#3A7084"></span><span style="background:#C47A3E"></span>
+      <span style="background:#B06048"></span>
+    </div>
+  </header>
+
+  <!-- موضوع -->
+  <section class="card">
+    <h2>📝 موضوع محتوا</h2>
+    <p class="hint">موضوع یا پرامپت رو اینجا پیست کنید؛ یا تیک «عنوان بعدی از لیست» رو بزنید تا از بانک ۸۰ عنوان برداشته بشه.</p>
+    <label for="topic">موضوع / پرامپت</label>
+    <textarea id="topic" rows="4" placeholder="مثلاً: کم‌آبی نوزاد را از کجا بفهمیم؟ یا هر موضوعی که در نظر دارید اینجا بنویسید / پیست کنید…"></textarea>
+    <label for="title">عنوان پیشنهادی (اختیاری)</label>
+    <input type="text" id="title" placeholder="اگر خالی باشه، خودم عنوان ترند پیشنهاد می‌دم">
+    <label class="check"><input type="checkbox" id="fromList"> از لیست برداشته بشه: «عنوان بعدی از لیست» 📋</label>
+  </section>
+
+  <!-- دو انتخاب -->
+  <section class="card">
+    <h2>🎚️ انتخاب‌های شما (فقط همین دو تا)</h2>
+    <p class="hint">همه‌ی بقیه‌ی مشخصات قبلاً قفل شده و پایین همین صفحه می‌بینید؛ فقط این دو عدد دست شماست.</p>
+    <div class="two">
+      <div class="pick">
+        <div class="unit">تعداد اسلاید</div>
+        <div class="num" id="slidesNum">۵</div>
+        <div class="unit">اسلاید</div>
+        <input type="range" id="slides" min="3" max="8" step="1" value="5">
+        <div class="step">
+          <button type="button" id="slidesMinus" aria-label="کمتر">−</button>
+          <button type="button" id="slidesPlus" aria-label="بیشتر">+</button>
+        </div>
+      </div>
+      <div class="pick warm">
+        <div class="unit">کاراکتر نریشنِ هر اسلاید</div>
+        <div class="num" id="charsNum">۶۵</div>
+        <div class="unit">کاراکتر (حدود یک جمله)</div>
+        <input type="range" id="chars" min="40" max="100" step="5" value="65">
+        <div class="step">
+          <button type="button" id="charsMinus" aria-label="کمتر">−</button>
+          <button type="button" id="charsPlus" aria-label="بیشتر">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="est" id="est"></div>
+  </section>
+
+  <!-- قفل‌شده‌ها -->
+  <section class="card">
+    <h2>🔒 مشخصات ثابت و قفل‌شده</h2>
+    <p class="hint">این‌ها قبلاً با تأیید شما قفل شدن و در همه‌ی تولیدات ثابت‌اند:</p>
+    <div class="grid">
+      <div class="lock">🎞️ <b>قالب اسلاید:</b> سبک ریل، مولتی‌کالر — عنوان درشت، کارت تصویر، پلاک نکته، نوار پیشرفت راست‌به‌چپ</div>
+      <div class="lock">📐 <b>سایز و رزولوشن:</b> ۱۰۸۰×۱۳۵۰ (نسبت ۴:۵ مخصوص پست اینستاگرام)</div>
+      <div class="lock">🎨 <b>پالت رنگ:</b> مولتی‌کالر — هر اسلاید یک پالت از ۵ پالت ریل
+        <div class="swatches"><span style="background:#487A68"></span><span style="background:#D65C4C"></span><span style="background:#3A7084"></span><span style="background:#C47A3E"></span><span style="background:#B06048"></span></div>
+      </div>
+      <div class="lock">🖼️ <b>سبک تصویر:</b> سه‌بعدی دیزنی / پیکسار، بدون متن داخل تصویر</div>
+      <div class="lock">🎙️ <b>نریشن:</b> صدای زن (صدای منتخب همیشگی) — مجموع کل ۳۰ تا ۴۰ ثانیه</div>
+      <div class="lock">📦 <b>حجم پست:</b> مجموع اسلایدها حداکثر ۴ مگابایت (فشرده‌سازی خودکار)</div>
+      <div class="lock">🧩 <b>خروجی‌ها:</b> اسلاید PNG + نریشن جدا + ویدیوی هر اسلاید + نسخه‌ی یک‌تکه + کپشن و هشتگ</div>
+      <div class="lock">🚚 <b>تحویل:</b> فقط گوگل درایو شما، با اسم فارسی خوانا + لینک پخش و دانلود</div>
+    </div>
+  </section>
+
+  <!-- سفارش آماده -->
+  <section class="card">
+    <h2>📤 متن سفارش آماده</h2>
+    <p class="hint">این متن خودکار از روی انتخاب‌های شما ساخته می‌شه. کپی‌اش کنید و همین‌جا توی چت برای من بفرستید تا تولید رو شروع کنم.</p>
+    <textarea id="out" readonly></textarea>
+    <div class="actions">
+      <button class="main" id="copyBtn">📋 کپی متن سفارش</button>
+      <button class="ghost" id="dlBtn">⬇ دانلود فایل سفارش</button>
+      <button class="ghost" id="resetBtn">↺ بازگشت به پیش‌فرض</button>
+    </div>
+  </section>
+
+  <footer>ساخته شده برای پیج دکتر کیانوش سالاریان 🌷<br>هر تغییری در قالب قفل‌شده فقط با گفتن شما انجام می‌شه.</footer>
+</div>
+<div id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const fa = n => String(n).replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+const RATE = 10;      // کاراکتر بر ثانیه (تقریبی، بر اساس نریشن‌های قبلی)
+const PAD  = 0.5;     // مکث پایانی هر اسلاید
+const KBPS = 0.045;   // مگابایت بر ثانیه (تقریبی حجم ویدیو)
+
+function vals(){
+  const slides = +$('slides').value, chars = +$('chars').value;
+  const totalChars = slides * chars;
+  const secs = totalChars / RATE + slides * PAD;
+  const mb = secs * KBPS;
+  return {slides, chars, totalChars, secs, mb, inRange: secs >= 30 && secs <= 40};
+}
+function render(){
+  const v = vals();
+  $('slidesNum').textContent = fa(v.slides);
+  $('charsNum').textContent  = fa(v.chars);
+  const sec = v.secs.toFixed(1);
+  $('est').className = 'est' + (v.inRange ? '' : ' warn');
+  $('est').innerHTML =
+    `مجموع نریشن: <b>${fa(v.totalChars)} کاراکتر</b> ≈ <b>${fa(sec)} ثانیه</b> ` +
+    `<span class="badge ${v.inRange ? 'ok' : 'warnb'}">${v.inRange ? '✅ توی بازه‌ی ۳۰ تا ۴۰ ثانیه' : '⚠️ خارج از بازه‌ی قفل‌شده‌ی ۳۰ تا ۴۰'}</span><br>` +
+    `حجم تقریبی کل پست: <b>${fa(v.mb.toFixed(2))} مگابایت</b> (سقف قفل‌شده: ۴ مگابایت) — هر اسلاید ≈ ${fa((v.secs / v.slides).toFixed(1))} ثانیه`;
+
+  const topic = $('topic').value.trim();
+  const title = $('title').value.trim();
+  const fromList = $('fromList').checked;
+  const lines = [
+    '🎬 سفارش تولید محتوا — دکتر کیانوش سالاریان',
+    '📌 موضوع: ' + (fromList ? 'عنوان بعدی از لیست' : (topic || '—')),
+    ...(topic && fromList ? ['📝 توضیح موضوع: ' + topic] : []),
+    '🏷️ عنوان پیشنهادی: ' + (title || 'با شما (عنوان ترند از بانک عنوان‌ها)'),
+    `🎞️ نوع: کاروسل صدا-تصویری ${fa(v.slides)} اسلایدی — قالب قفل‌شده‌ی ریل ۴:۵ مولتی‌کالر`,
+    `🔤 نریشن: هر اسلاید ${fa(v.chars)} کاراکتر — مجموع ${fa(v.totalChars)} کاراکتر ≈ ${fa(sec)} ثانیه (قانون ۳۰ تا ۴۰)`,
+    '📐 سایز و رزولوشن: ۱۰۸۰×۱۳۵۰ (۴:۵)',
+    '🎨 پالت: مولتی‌کالر ۵ پالت ریل | 🖼️ سبک تصویر: دیزنی/پیکسار سه‌بعدی',
+    '🎙️ صدا: زن (صدای ثابت) | 📦 حجم کل پست: حداکثر ۴ مگابایت',
+    '🧩 خروجی: اسلاید PNG + نریشن جدا + ویدیوی هر اسلاید + نسخه‌ی یک‌تکه + کپشن و هشتگ',
+    '🚚 تحویل: گوگل درایو'
+  ];
+  $('out').value = lines.join('\n');
+}
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2600);
+}
+function step(id, delta){
+  const el = $(id), d = delta * (+el.step || 1);
+  el.value = Math.min(+el.max, Math.max(+el.min, +el.value + d));
+  render();
+}
+['topic','title','fromList','slides','chars'].forEach(id => $(id).addEventListener('input', render));
+$('slidesPlus').onclick  = ()=>step('slides', 1);
+$('slidesMinus').onclick = ()=>step('slides', -1);
+$('charsPlus').onclick   = ()=>step('chars', 1);
+$('charsMinus').onclick  = ()=>step('chars', -1);
+$('copyBtn').onclick = async () => {
+  if (!$('topic').value.trim() && !$('fromList').checked){
+    $('topic').classList.add('err'); $('topic').focus();
+    toast('اول موضوع رو بنویسید یا تیک «عنوان بعدی از لیست» رو بزنید 🙏');
+    setTimeout(()=>$('topic').classList.remove('err'), 2500);
+    return;
+  }
+  try { await navigator.clipboard.writeText($('out').value); }
+  catch(e){ $('out').select(); document.execCommand('copy'); }
+  toast('کپی شد ✅ حالا توی چت پیست کنید و بفرستید');
+};
+$('dlBtn').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([$('out').value], {type:'text/plain;charset=utf-8'}));
+  a.download = 'content-order.txt'; a.click(); URL.revokeObjectURL(a.href);
+};
+$('resetBtn').onclick = () => {
+  $('topic').value=''; $('title').value=''; $('fromList').checked=false;
+  $('slides').value=5; $('chars').value=65; render();
+  toast('برگشت به پیش‌فرض‌های قفل‌شده 🔒');
+};
+render();
+</script>
+</body>
+</html>
