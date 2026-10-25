@@ -92,6 +92,38 @@ def make_clip(slide_png, mp3, out_mp4):
     subprocess.run(cmd, check=True)
 
 
+MAX_COMBINED_BYTES = 3_800_000  # هدف اجرایی: همیشه زیر سقف ۴ مگابایت دکتر
+
+
+def ensure_max_size(path, max_bytes=MAX_COMBINED_BYTES, audio_kbps=80):
+    """تضمین حجم نهایی ≤ سقف: اگر فایل بزرگ‌تر بود، با بیت‌ریتِ محاسبه‌شده از روی
+    مدت‌زمان، بازانکدینگ دومرحله‌ای انجام می‌شود (صدای AAC مونو سبک، بقیهٔ بودجه برای ویدیو).
+    چون اسلایدها تصویر ثابت‌اند، افت کیفیت محسوس نیست."""
+    if os.path.getsize(path) <= max_bytes:
+        return False
+    d = dur_of(path)
+    total_kbps = (max_bytes * 8 / d) / 1000
+    v_kbps = max(100, int(total_kbps - audio_kbps - 16))  # ۱۶k حاشیهٔ امنِ کانتینر
+    tmp = path + ".fit.mp4"
+    passlog = path + ".passlog"
+    common = [FF, "-y", "-v", "error", "-i", path,
+              "-c:v", "libx264", "-tune", "stillimage", "-b:v", f"{v_kbps}k",
+              "-pix_fmt", "yuv420p", "-r", "30", "-passlogfile", passlog]
+    try:
+        subprocess.run(common + ["-pass", "1", "-an", "-f", "null", os.devnull],
+                       check=True)
+        subprocess.run(common + ["-pass", "2", "-c:a", "aac", "-b:a", f"{audio_kbps}k",
+                                 "-movflags", "+faststart", tmp], check=True)
+    finally:
+        for suf in ("-0.log", "-0.log.mbtree", ".log", ".log.mbtree"):
+            try:
+                os.remove(passlog + suf)
+            except OSError:
+                pass
+    os.replace(tmp, path)
+    return True
+
+
 def make_combined(clips, out_mp4):
     """نسخهٔ یک‌تکه از همهٔ کلیپ‌ها پشت سر هم (بدون رندر مجدد)."""
     lst = out_mp4 + ".txt"
@@ -113,20 +145,31 @@ def main():
 
     clips = []
     total = 0.0
+    total_bytes = 0
+    # سقف هر اسلاید طوری که مجموع اسلایدهای پست اینستاگرام از ۴ مگابایت رد نشود
+    per_slide_cap = MAX_COMBINED_BYTES // len(files)
     for i, slide in enumerate(files, start=1):
         mp3 = os.path.join(outdir, f"{SLUG}_narration_{i:02d}.mp3")
         mp4 = os.path.join(outdir, f"{SLUG}_video_{i:02d}.mp4")
         make_clip(slide, mp3, mp4)
+        fitted_i = ensure_max_size(mp4, max_bytes=per_slide_cap)
         clips.append(mp4)
         d = dur_of(mp4)
         total += d
+        total_bytes += os.path.getsize(mp4)
         print(f"clip {i}: {os.path.basename(mp4)}  {d:.1f}s  "
-              f"{os.path.getsize(mp4) // 1024}KB  (صدا {dur_of(mp3):.1f}s)")
+              f"{os.path.getsize(mp4) / 1e6:.2f}MB"
+              f"{' (فشرده شد)' if fitted_i else ''}"
+              f"  (صدا {dur_of(mp3):.1f}s)")
+    print(f"sum of slide videos (حجم کل پست): {total_bytes / 1e6:.2f}MB "
+          f"/ سقف {MAX_COMBINED_BYTES / 1e6:.1f}MB")
 
     combined = os.path.join(outdir, f"{SLUG}_combined.mp4")
     make_combined(clips, combined)
+    fitted = ensure_max_size(combined)  # سقف ثابت: ویدیوی یک‌تکه هرگز بالای ۴ مگابایت
     print(f"combined: {os.path.basename(combined)}  {dur_of(combined):.1f}s  "
-          f"{os.path.getsize(combined) // 1024}KB")
+          f"{os.path.getsize(combined) / 1e6:.2f}MB"
+          f"{' (فشرده‌سازی خودکار زیر سقف)' if fitted else ''}")
 
     full = os.path.join(outdir, f"{SLUG}_full.zip")
     with zipfile.ZipFile(full, "w", zipfile.ZIP_DEFLATED) as z:
@@ -134,8 +177,11 @@ def main():
                                   for i in range(1, len(files) + 1)] + [cap_path]:
             z.write(p, os.path.basename(p))
     ok = "✓ در بازهٔ ۳۰ تا ۴۰ ثانیه" if 30 <= total <= 40 else "✗ خارج از بازهٔ ۳۰-۴۰!"
+    ok_size = ("✓ حجم پست زیر ۴ مگابایت" if total_bytes <= 4_000_000
+               else "✗ حجم پست بالای ۴ مگابایت!")
     print(f"[✓] {SLUG}: {len(files)} اسلاید + {len(clips)} ویدیو + نسخهٔ یک‌تکه "
-          f"(مجموع {total:.1f} ثانیه — {ok}) + ZIP کامل {os.path.getsize(full) // 1024}KB")
+          f"(مجموع {total:.1f} ثانیه — {ok}؛ حجم پست {total_bytes / 1e6:.2f}MB — {ok_size}) "
+          f"+ ZIP کامل {os.path.getsize(full) // 1024}KB")
 
 
 if __name__ == "__main__":
