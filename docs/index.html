@@ -8,356 +8,522 @@
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#22384a; --muted:#6b7f8f; --card:#fff; --line:#e7ddd0; --radius:18px;
+    --ink:#22384a; --muted:#6b7f8f; --card:#fff; --line:#e7ddd0; --radius:14px;
     --sage:#487A68; --warm:#D65C4C; --mint:#3A7084; --night:#C47A3E; --clay:#B06048;
   }
   *{box-sizing:border-box}
-  body{font-family:'Vazirmatn',Tahoma,sans-serif;margin:0;color:var(--ink);
+  body{font-family:'Vazirmatn',Tahoma,sans-serif;margin:0;color:var(--ink);font-size:14px;
        background:linear-gradient(180deg,#FDF6EC 0%,#F3EFE6 45%,#E9F0E9 100%);min-height:100vh}
-  .wrap{max-width:860px;margin:0 auto;padding:18px 14px 48px}
+  .wrap{max-width:1180px;margin:0 auto;padding:10px 10px 118px}
   header{background:linear-gradient(120deg,var(--sage),var(--mint) 55%,var(--night));
-         color:#fff;border-radius:22px;padding:26px 22px 22px;text-align:center;
-         box-shadow:0 10px 30px rgba(58,112,132,.25)}
-  header h1{margin:0;font-size:26px;font-weight:900}
-  header p{margin:6px 0 0;opacity:.92;font-size:14px}
-  .palbar{display:flex;gap:6px;justify-content:center;margin-top:14px}
-  .palbar span{width:46px;height:10px;border-radius:6px}
+         color:#fff;border-radius:16px;padding:12px 14px 10px;box-shadow:0 8px 22px rgba(58,112,132,.22)}
+  .headrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  header h1{margin:0;font-size:21px;font-weight:900;line-height:1.35}
+  header p{margin:2px 0 0;opacity:.93;font-size:12px}
+  .lang-switch{display:flex;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:3px;gap:3px}
+  .lang-switch button{border:0;background:transparent;color:#fff;font-family:inherit;font-weight:900;font-size:12px;
+        padding:6px 11px;border-radius:999px;cursor:pointer;opacity:.82}
+  .lang-switch button.active{background:#fff;color:var(--sage);opacity:1}
+  .palbar{display:flex;gap:4px;margin-top:9px}
+  .palbar span{height:5px;flex:1;border-radius:5px}
+  .status{display:flex;align-items:center;gap:7px;margin-top:8px;padding:7px 10px;border-radius:11px;
+          background:#fff;border:1px solid var(--line);font-size:12px;font-weight:700;color:#516579}
+  .status .dot{width:9px;height:9px;border-radius:50%;background:#d8a23a;flex:none}
+  .status.direct .dot{background:#2e9e65}.status.static .dot{background:#3A7084}
+  .layout{display:grid;grid-template-columns:minmax(300px,.82fr) minmax(0,1.55fr);gap:10px;align-items:start}
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-        padding:18px;margin-top:16px;box-shadow:0 4px 16px rgba(90,70,56,.07)}
-  .card h2{margin:0 0 6px;font-size:18px;font-weight:900}
-  .hint{color:var(--muted);font-size:13px;margin:0 0 12px}
-  label.lbl{display:block;font-weight:700;font-size:14px;margin:12px 0 6px}
-  textarea,input[type=text]{width:100%;border:2px solid var(--line);border-radius:12px;
-        padding:12px;font-family:inherit;font-size:15px;background:#fffdf9;color:var(--ink)}
+        padding:12px;margin-top:10px;box-shadow:0 3px 12px rgba(90,70,56,.06)}
+  .card h2{margin:0;font-size:16px;font-weight:900}
+  .hint{color:var(--muted);font-size:11.5px;line-height:1.65;margin:3px 0 8px}
+  label.lbl{display:block;font-weight:800;font-size:12.5px;margin:8px 0 4px}
+  textarea,input[type=text]{width:100%;border:1.5px solid var(--line);border-radius:10px;
+        padding:8px 10px;font-family:inherit;font-size:13.5px;background:#fffdf9;color:var(--ink)}
+  #topic{min-height:82px;resize:vertical}
   textarea:focus,input[type=text]:focus{outline:none;border-color:var(--sage)}
   .err{border-color:#D65C4C !important;background:#FFF3F1 !important}
-  .counter{display:flex;justify-content:space-between;color:var(--muted);font-size:12.5px;margin-top:6px;font-weight:700}
+  .counter{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:11px;margin-top:4px;font-weight:700}
   .counter b{color:var(--sage)}
-  .check{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;margin-top:12px;cursor:pointer}
-  .check input{width:20px;height:20px;accent-color:var(--sage)}
-  .opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
-  .opt{position:relative;cursor:pointer}
+  .check{display:flex;align-items:center;gap:6px;font-weight:700;font-size:12.5px;margin-top:8px;cursor:pointer;line-height:1.5}
+  .check input{width:17px;height:17px;accent-color:var(--sage);flex:none}
+  .settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .grp{background:#FFFaf3;border:1px solid #eee2d2;border-radius:12px;padding:8px;min-width:0}
+  .grp.wide{grid-column:1/-1}
+  .grp .lbl{margin-top:0}
+  .opts{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+  .opt{position:relative;cursor:pointer;max-width:100%}
   .opt input{position:absolute;opacity:0;inset:0;cursor:pointer}
-  .opt span{display:flex;align-items:center;gap:7px;padding:10px 14px;border:2px solid var(--line);
-        border-radius:30px;background:#FBF7F0;font-size:13.5px;font-weight:700;transition:all .15s}
+  .opt span{display:flex;align-items:center;gap:5px;padding:6px 8px;border:1.5px solid var(--line);
+        border-radius:999px;background:#FBF7F0;font-size:12px;font-weight:700;line-height:1.35;transition:all .15s}
+  .opt span b{font-weight:700}
   .opt input:checked + span{background:var(--sage);border-color:var(--sage);color:#fff}
-  .opt .dot{width:16px;height:16px;border-radius:50%;border:1px solid rgba(0,0,0,.1);flex:none}
+  .opt input:focus-visible + span{outline:2px solid var(--mint);outline-offset:2px}
+  .opt .dot{width:12px;height:12px;border-radius:50%;border:1px solid rgba(0,0,0,.1);flex:none}
   .opt .multi{background:linear-gradient(90deg,#487A68 20%,#D65C4C 20% 40%,#3A7084 40% 60%,#C47A3E 60% 80%,#B06048 80%)}
-  .lk{font-size:11px;background:#EFE7DA;color:#8a6a45;border-radius:12px;padding:1px 7px;font-weight:800}
+  .lk{font-size:9.5px;background:#EFE7DA;color:#8a6a45;border-radius:999px;padding:0 5px;font-weight:800;font-style:normal;white-space:nowrap}
   .opt input:checked + span .lk{background:rgba(255,255,255,.25);color:#fff}
-  .grp{margin-top:16px}
-  .grp:first-of-type{margin-top:4px}
-  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  @media(max-width:640px){.two{grid-template-columns:1fr}}
-  .pick{background:#FBF7F0;border:2px solid var(--line);border-radius:14px;padding:14px;text-align:center}
-  .pick .num{font-size:44px;font-weight:900;line-height:1.1;color:var(--sage)}
-  .pick.warm .num{color:var(--clay)}
-  .pick .unit{color:var(--muted);font-size:13px;font-weight:700}
-  input[type=range]{width:100%;margin-top:10px;accent-color:var(--sage);height:28px}
+  .pickrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .pick{background:#fff;border:1px solid var(--line);border-radius:11px;padding:8px}
+  .pick-head{display:flex;align-items:center;justify-content:space-between;gap:6px}
+  .pick-head .unit{color:var(--muted);font-size:11.5px;font-weight:800}
+  .stepper{display:flex;align-items:center;gap:4px}
+  .stepper output{min-width:46px;text-align:center;font-size:25px;font-weight:900;line-height:1;color:var(--sage)}
+  .pick.warm .stepper output{color:var(--clay)}
+  .stepper button{width:31px;height:31px;border-radius:50%;border:none;font-size:19px;font-weight:900;background:var(--sage);color:#fff;cursor:pointer;line-height:1}
+  .pick.warm .stepper button{background:var(--clay)}
+  .stepper button:disabled{opacity:.35;cursor:default}
+  input[type=range]{width:100%;margin:5px 0 1px;accent-color:var(--sage);height:20px}
   .pick.warm input[type=range]{accent-color:var(--clay)}
-  .step{display:flex;gap:10px;justify-content:center;margin-top:8px}
-  .step button{width:48px;height:48px;border-radius:50%;border:none;font-size:24px;font-weight:900;background:var(--sage);color:#fff;cursor:pointer}
-  .pick.warm .step button{background:var(--clay)}
   input[type=range]:disabled{opacity:.35}
-  .est{margin-top:14px;border-radius:12px;padding:12px 14px;font-size:14px;line-height:2;background:#EFF6F1;border:1.5px solid #BFD8C9}
+  .extras{display:flex;flex-wrap:wrap;gap:5px 14px}
+  .extras .check{margin-top:2px}
+  .actionbar{position:fixed;left:50%;transform:translateX(-50%);bottom:8px;width:min(1160px,calc(100% - 16px));z-index:5;
+        display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:9px;align-items:center;
+        background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border:1px solid #d9e4da;border-radius:16px;
+        padding:9px;box-shadow:0 12px 32px rgba(34,56,74,.20)}
+  .est{font-size:12px;line-height:1.65;background:#EFF6F1;border:1px solid #BFD8C9;border-radius:11px;padding:7px 9px;min-height:46px}
   .est.warn{background:#FFF3E8;border-color:#F1CDA8}
-  .badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:700;vertical-align:middle}
-  .ok{background:#DFF0E5;color:#226646}.warnb{background:#FFE3C7;color:#9A5B16}
-  .gen{margin-top:18px;width:100%;border:none;cursor:pointer;color:#fff;
-       background:linear-gradient(120deg,var(--warm),var(--night) 55%,var(--sage));
-       padding:20px;border-radius:18px;font-family:inherit;font-size:21px;font-weight:900;
-       box-shadow:0 12px 28px rgba(214,92,76,.35)}
+  .gen{border:none;cursor:pointer;color:#fff;background:linear-gradient(120deg,var(--warm),var(--night) 55%,var(--sage));
+       padding:13px 20px;border-radius:13px;font-family:inherit;font-size:17px;font-weight:900;white-space:nowrap;
+       box-shadow:0 8px 20px rgba(214,92,76,.28)}
   .gen:disabled{opacity:.6}
-  .gen-sub{text-align:center;color:var(--muted);font-size:12.5px;margin-top:8px}
-  #done{display:none;margin-top:16px;background:#EFF8F1;border:2px solid #9ED1AF;border-radius:16px;padding:18px;text-align:center}
-  #done .code{font-size:30px;font-weight:900;color:#226646;letter-spacing:1px}
-  #fallback{display:none;margin-top:14px}
-  #out{background:#1E3038;color:#EAF3EE;border:none;min-height:220px;font-size:13px;line-height:1.9;width:100%;border-radius:12px;padding:12px;font-family:inherit}
-  .mini{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-  .mini button{flex:1;min-width:150px;background:#fff;color:var(--sage);border:2px solid var(--sage);cursor:pointer;
-        padding:11px;border-radius:12px;font-family:inherit;font-size:14px;font-weight:800}
-  #toast{position:fixed;bottom:22px;right:50%;transform:translateX(50%) translateY(90px);
-        background:#22384a;color:#fff;padding:12px 22px;border-radius:30px;font-weight:700;font-size:14px;
+  .reset{background:#fff;color:var(--sage);border:1.5px solid var(--sage);cursor:pointer;padding:11px 12px;
+       border-radius:12px;font-family:inherit;font-size:12px;font-weight:800;white-space:nowrap}
+  #done{display:none;margin-top:10px;background:#EFF8F1;border:2px solid #9ED1AF;border-radius:14px;padding:13px;text-align:center;scroll-margin-bottom:150px}
+  #done .code{font-size:25px;font-weight:900;color:#226646;letter-spacing:.5px;line-height:1.4}
+  #done p{font-size:12px;color:#3c5a48;margin:2px 0 0}
+  #fallback{display:none;scroll-margin-bottom:150px}
+  #out{background:#1E3038;color:#EAF3EE;border:none;min-height:145px;font-size:12px;line-height:1.65;width:100%;border-radius:11px;padding:10px;font-family:inherit;resize:vertical}
+  .mini{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+  .mini button,.mini a{flex:1;min-width:145px;text-align:center;text-decoration:none;background:#fff;color:var(--sage);border:1.5px solid var(--sage);cursor:pointer;
+        padding:9px;border-radius:11px;font-family:inherit;font-size:12.5px;font-weight:800}
+  .mini a.primary{background:var(--sage);color:#fff}
+  .mini a.disabled{opacity:.45;pointer-events:none}
+  #toast{position:fixed;bottom:112px;right:50%;transform:translateX(50%) translateY(90px);
+        background:#22384a;color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;font-size:13px;
         transition:transform .35s;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:9;text-align:center;max-width:92vw}
   #toast.show{transform:translateX(50%) translateY(0)}
-  footer{text-align:center;color:var(--muted);font-size:12.5px;margin-top:20px;line-height:1.9}
+  html[dir="ltr"] #toast{left:50%;right:auto;transform:translateX(-50%) translateY(90px)}
+  html[dir="ltr"] #toast.show{transform:translateX(-50%) translateY(0)}
+  footer{text-align:center;color:var(--muted);font-size:11px;margin-top:10px;line-height:1.7}
+  @media(max-width:900px){.layout{grid-template-columns:1fr}}
+  @media(max-width:640px){
+    .wrap{padding:8px 8px 152px}.card{padding:10px}.settings-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.grp{padding:7px}
+    .pickrow{gap:6px}.pick{padding:7px}.stepper output{min-width:38px;font-size:22px}.stepper button{width:28px;height:28px}
+    .actionbar{grid-template-columns:1fr auto;padding:8px}.est{grid-column:1/-1;min-height:0}.gen{width:100%;padding:12px 14px}.reset{padding:11px 9px}
+    #toast{bottom:148px}header h1{font-size:19px}.lang-switch button{padding:5px 9px}
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
-
   <header>
-    <h1>🎬 استودیو تولید محتوا</h1>
-    <p>دکتر کیانوش سالاریان — سفارش تولید محتوای اینستاگرام، بدون نیاز به پیام دادن</p>
+    <div class="headrow">
+      <div>
+        <h1 data-i18n="appTitle">🎬 استودیو تولید محتوا</h1>
+        <p data-i18n="appSub">دکتر کیانوش سالاریان؛ سفارش تولید محتوای اینستاگرام بدون ارسال متن در چت</p>
+      </div>
+      <div class="lang-switch" role="group" aria-label="Language / زبان">
+        <button type="button" id="langFa">فارسی</button>
+        <button type="button" id="langEn">English</button>
+      </div>
+    </div>
     <div class="palbar"><span style="background:#487A68"></span><span style="background:#D65C4C"></span><span style="background:#3A7084"></span><span style="background:#C47A3E"></span><span style="background:#B06048"></span></div>
   </header>
 
-  <!-- موضوع -->
-  <section class="card">
-    <h2>📝 موضوع یا پرامپت</h2>
-    <p class="hint">موضوع رو اینجا بنویسید یا پیست کنید — <b>بدون هیچ محدودیت کاراکتری</b>؛ هرقدر طولانیه اشکال نداره. یا تیک «عنوان بعدی از لیست» رو بزنید.</p>
-    <label class="lbl" for="topic">موضوع / پرامپت</label>
-    <textarea id="topic" rows="5" placeholder="مثلاً: کم‌آبی نوزاد را از کجا بفهمیم؟ ۶ نشانه مهم… یا یک متن کامل برای تبدیل به محتوا اینجا پیست کنید…"></textarea>
-    <div class="counter"><span>✍️ بدون محدودیت</span><span><b id="charCount">۰</b> کاراکتر · <b id="wordCount">۰</b> کلمه</span></div>
-    <label class="lbl" for="title">عنوان پیشنهادی (اختیاری)</label>
-    <input type="text" id="title" placeholder="خالی باشه؟ خودم از بانک ۸۰ عنوان، عنوان ترند انتخاب می‌کنم">
-    <label class="check"><input type="checkbox" id="fromList"> به جای موضوع من: «عنوان بعدی از لیست» 📋</label>
-  </section>
+  <div class="status" id="serverStatus"><span class="dot"></span><span id="statusText">در حال بررسی اتصال ثبت مستقیم…</span></div>
 
-  <!-- انتخاب‌ها -->
-  <section class="card">
-    <h2>🎚️ تنظیمات تولید</h2>
-    <p class="hint">همه‌ی گزینه‌ها قابل انتخاب‌اند؛ هرجا برچسب <span class="lk">🔒 پیش‌فرض شما</span> هست، یعنی همون انتخابیه که قبلاً قفل کردید و از پیش انتخاب شده.</p>
+  <main class="layout">
+    <section class="card">
+      <h2 data-i18n="topicTitle">📝 موضوع یا پرامپت</h2>
+      <p class="hint" data-i18n="topicHint">موضوع را بنویسید یا پیست کنید؛ بدون محدودیت کاراکتر.</p>
+      <label class="lbl" for="topic" data-i18n="topicLabel">موضوع / پرامپت</label>
+      <textarea id="topic" rows="3" data-i18n-ph="topicPlaceholder" placeholder="مثلاً: کم‌آبی نوزاد را از کجا بفهمیم؟ یا متن کامل را اینجا پیست کنید…"></textarea>
+      <div class="counter"><span data-i18n="unlimited">✍️ بدون محدودیت</span><span><b id="charCount">۰</b> <span data-i18n="characters">کاراکتر</span> · <b id="wordCount">۰</b> <span data-i18n="words">کلمه</span></span></div>
+      <label class="lbl" for="title" data-i18n="titleLabel">عنوان پیشنهادی (اختیاری)</label>
+      <input type="text" id="title" data-i18n-ph="titlePlaceholder" placeholder="خالی باشد، از بانک ۸۰ عنوان انتخاب می‌شود">
+      <label class="check"><input type="checkbox" id="fromList"> <span data-i18n="fromList">به جای موضوع من: «عنوان بعدی از لیست» 📋</span></label>
 
-    <div class="grp">
-      <label class="lbl">🎞️ نوع محتوا</label>
-      <div class="opts" id="ctype">
-        <label class="opt"><input type="radio" name="ctype" value="carousel_av" checked><span>کاروسل صدا-تصویری <i class="lk">🔒 پیش‌فرض شما</i></span></label>
-        <label class="opt"><input type="radio" name="ctype" value="carousel_img"><span>کاروسل تصویری (بدون صدا)</span></label>
-        <label class="opt"><input type="radio" name="ctype" value="reel"><span>ریل ویدیویی</span></label>
-        <label class="opt"><input type="radio" name="ctype" value="single"><span>تک‌تصویر</span></label>
-      </div>
-    </div>
-
-    <div class="two" style="margin-top:16px">
-      <div class="pick">
-        <div class="unit">تعداد اسلاید</div>
-        <div class="num" id="slidesNum">۵</div>
-        <div class="unit">اسلاید <span class="lk">🔒 پیش‌فرض ۵</span></div>
-        <input type="range" id="slides" min="3" max="8" step="1" value="5">
-        <div class="step"><button type="button" id="slidesMinus">−</button><button type="button" id="slidesPlus">+</button></div>
-      </div>
-      <div class="pick warm">
-        <div class="unit">زمان کل نریشن</div>
-        <div class="num" id="secsNum">۳۵</div>
-        <div class="unit">ثانیه <span class="lk">🔒 بازه‌ی ۳۰ تا ۴۰</span></div>
-        <input type="range" id="secs" min="30" max="40" step="1" value="35">
-        <div class="step"><button type="button" id="secsMinus">−</button><button type="button" id="secsPlus">+</button></div>
-      </div>
-    </div>
-
-    <div class="grp">
-      <label class="lbl">📐 سایز (نسبت ابعاد)</label>
+      <label class="lbl" data-i18n="contentLanguage">🌐 زبان محتوا</label>
       <div class="opts">
-        <label class="opt"><input type="radio" name="ratio" value="4:5" checked><span>۴:۵ پست اینستاگرام <i class="lk">🔒 پیش‌فرض شما</i></span></label>
-        <label class="opt"><input type="radio" name="ratio" value="9:16"><span>۹:۱۶ ریل / استوری</span></label>
-        <label class="opt"><input type="radio" name="ratio" value="1:1"><span>۱:۱ مربع</span></label>
+        <label class="opt"><input type="radio" name="clang" value="fa" checked><span><b data-i18n="persian">فارسی</b> <i class="lk" data-i18n="locked">🔒 پیش‌فرض</i></span></label>
+        <label class="opt"><input type="radio" name="clang" value="en"><span><b data-i18n="english">English</b></span></label>
       </div>
-    </div>
+    </section>
 
-    <div class="grp">
-      <label class="lbl">🔎 رزولوشن <span id="pxOut" style="color:var(--sage)"></span></label>
-      <div class="opts">
-        <label class="opt"><input type="radio" name="res" value="720"><span>۷۲۰ سبک</span></label>
-        <label class="opt"><input type="radio" name="res" value="1080" checked><span>۱۰۸۰ استاندارد <i class="lk">🔒 پیش‌فرض شما</i></span></label>
-        <label class="opt"><input type="radio" name="res" value="1440"><span>۱۴۴۰ باکیفیت</span></label>
+    <section class="card">
+      <h2 data-i18n="settingsTitle">🎚️ تنظیمات تولید</h2>
+      <p class="hint" data-i18n="settingsHint">گزینه‌های دارای 🔒 همان پیش‌فرض‌های ثابت شما هستند.</p>
+      <div class="settings-grid">
+        <div class="grp wide">
+          <label class="lbl" data-i18n="contentType">🎞️ نوع محتوا</label>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="ctype" value="carousel_av" checked><span><b data-i18n="typeAV">کاروسل صدا-تصویری</b> <i class="lk" data-i18n="locked">🔒 پیش‌فرض</i></span></label>
+            <label class="opt"><input type="radio" name="ctype" value="carousel_img"><span><b data-i18n="typeImg">کاروسل تصویری</b></span></label>
+            <label class="opt"><input type="radio" name="ctype" value="reel"><span><b data-i18n="typeReel">ریل ویدیویی</b></span></label>
+            <label class="opt"><input type="radio" name="ctype" value="single"><span><b data-i18n="typeSingle">تک‌تصویر</b></span></label>
+          </div>
+        </div>
+
+        <div class="grp wide">
+          <div class="pickrow">
+            <div class="pick">
+              <div class="pick-head"><span class="unit" data-i18n="slides">تعداد اسلاید</span>
+                <span class="stepper"><button type="button" id="slidesMinus" aria-label="−">−</button><output id="slidesNum">۵</output><button type="button" id="slidesPlus" aria-label="+">+</button></span></div>
+              <input type="range" id="slides" min="3" max="8" step="1" value="5">
+              <span class="lk" data-i18n="default5">🔒 پیش‌فرض ۵</span>
+            </div>
+            <div class="pick warm">
+              <div class="pick-head"><span class="unit" data-i18n="narrationTime">زمان کل نریشن</span>
+                <span class="stepper"><button type="button" id="secsMinus" aria-label="−">−</button><output id="secsNum">۳۵</output><button type="button" id="secsPlus" aria-label="+">+</button></span></div>
+              <input type="range" id="secs" min="30" max="40" step="1" value="35">
+              <span class="lk" data-i18n="range3040">🔒 ۳۰ تا ۴۰ ثانیه</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grp">
+          <label class="lbl" data-i18n="ratio">📐 سایز</label>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="ratio" value="4:5" checked><span><b data-i18n="ratio45">۴:۵ پست</b> <i class="lk" data-i18n="locked">🔒 پیش‌فرض</i></span></label>
+            <label class="opt"><input type="radio" name="ratio" value="9:16"><span><b data-i18n="ratio916">۹:۱۶ ریل</b></span></label>
+            <label class="opt"><input type="radio" name="ratio" value="1:1"><span><b data-i18n="ratio11">۱:۱ مربع</b></span></label>
+          </div>
+        </div>
+
+        <div class="grp">
+          <label class="lbl"><span data-i18n="resolution">🔎 رزولوشن</span> <span id="pxOut" style="color:var(--sage)"></span></label>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="res" value="720"><span><b data-i18n="res720">۷۲۰ سبک</b></span></label>
+            <label class="opt"><input type="radio" name="res" value="1080" checked><span><b data-i18n="res1080">۱۰۸۰ استاندارد</b> <i class="lk" data-i18n="locked">🔒 پیش‌فرض</i></span></label>
+            <label class="opt"><input type="radio" name="res" value="1440"><span><b data-i18n="res1440">۱۴۴۰ باکیفیت</b></span></label>
+          </div>
+        </div>
+
+        <div class="grp wide">
+          <label class="lbl" data-i18n="palette">🎨 پالت رنگ</label>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="palette" value="multi" checked><span><i class="dot multi"></i><b data-i18n="paletteMulti">مولتی‌کالر</b> <i class="lk" data-i18n="locked">🔒 پیش‌فرض</i></span></label>
+            <label class="opt"><input type="radio" name="palette" value="sage"><span><i class="dot" style="background:#487A68"></i><b data-i18n="sage">مریم‌گلی</b></span></label>
+            <label class="opt"><input type="radio" name="palette" value="warm"><span><i class="dot" style="background:#D65C4C"></i><b data-i18n="warm">هلویی گرم</b></span></label>
+            <label class="opt"><input type="radio" name="palette" value="mint"><span><i class="dot" style="background:#3A7084"></i><b data-i18n="mint">نعنایی</b></span></label>
+            <label class="opt"><input type="radio" name="palette" value="night"><span><i class="dot" style="background:#C47A3E"></i><b data-i18n="night">کهربایی</b></span></label>
+            <label class="opt"><input type="radio" name="palette" value="clay"><span><i class="dot" style="background:#B06048"></i><b data-i18n="clay">سفالی</b></span></label>
+          </div>
+        </div>
+
+        <div class="grp wide">
+          <label class="lbl" data-i18n="imageStyle">🖼️ سبک تصویر</label>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="istyle" value="pixar3d" checked><span><b data-i18n="pixar">سه‌بعدی دیزنی / پیکسار</b> <i class="lk" data-i18n="locked">🔒 پیش‌فرض</i></span></label>
+            <label class="opt"><input type="radio" name="istyle" value="flat"><span><b data-i18n="flat">تخت مینیمال</b></span></label>
+            <label class="opt"><input type="radio" name="istyle" value="watercolor"><span><b data-i18n="watercolor">آبرنگ نرم</b></span></label>
+            <label class="opt"><input type="radio" name="istyle" value="kidsbook"><span><b data-i18n="kidsbook">کتاب کودک</b></span></label>
+            <label class="opt"><input type="radio" name="istyle" value="photo"><span><b data-i18n="photo">عکس واقعی</b></span></label>
+          </div>
+        </div>
+
+        <div class="grp">
+          <label class="lbl" data-i18n="voice">🎙️ نریشن</label>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="voice" value="female" checked><span><b data-i18n="female">👩 زن</b> <i class="lk" data-i18n="locked">🔒 پیش‌فرض</i></span></label>
+            <label class="opt"><input type="radio" name="voice" value="male"><span><b data-i18n="male">👨 مرد</b></span></label>
+            <label class="opt"><input type="radio" name="voice" value="none"><span><b data-i18n="noVoice">🔇 بدون نریشن</b></span></label>
+          </div>
+        </div>
+
+        <div class="grp">
+          <label class="lbl" data-i18n="maxSize">📦 سقف حجم پست</label>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="maxmb" value="2"><span><b data-i18n="mb2">۲ مگابایت</b></span></label>
+            <label class="opt"><input type="radio" name="maxmb" value="4" checked><span><b data-i18n="mb4">۴ مگابایت</b> <i class="lk" data-i18n="locked">🔒 پیش‌فرض</i></span></label>
+            <label class="opt"><input type="radio" name="maxmb" value="8"><span><b data-i18n="mb8">۸ مگابایت</b></span></label>
+          </div>
+        </div>
+
+        <div class="grp wide">
+          <label class="lbl" data-i18n="extras">🧩 خروجی‌های همراه</label>
+          <div class="extras">
+            <label class="check"><input type="checkbox" id="xCombined" checked> <span data-i18n="combined">نسخه یک‌تکه</span></label>
+            <label class="check"><input type="checkbox" id="xParts" checked> <span data-i18n="parts">فایل‌های جدای PNG و MP3</span></label>
+            <label class="check"><input type="checkbox" id="xCaption" checked> <span data-i18n="caption">کپشن و هشتگ</span></label>
+          </div>
+        </div>
       </div>
-    </div>
-
-    <div class="grp">
-      <label class="lbl">🎨 پالت رنگ</label>
-      <div class="opts">
-        <label class="opt"><input type="radio" name="palette" value="multi" checked><span><i class="dot multi"></i>مولتی‌کالر (هر اسلاید یک پالت) <i class="lk">🔒 پیش‌فرض شما</i></span></label>
-        <label class="opt"><input type="radio" name="palette" value="sage"><span><i class="dot" style="background:#487A68"></i>مریم‌گلی</span></label>
-        <label class="opt"><input type="radio" name="palette" value="warm"><span><i class="dot" style="background:#D65C4C"></i>هلویی گرم</span></label>
-        <label class="opt"><input type="radio" name="palette" value="mint"><span><i class="dot" style="background:#3A7084"></i>نعنایی</span></label>
-        <label class="opt"><input type="radio" name="palette" value="night"><span><i class="dot" style="background:#C47A3E"></i>کهربایی</span></label>
-        <label class="opt"><input type="radio" name="palette" value="clay"><span><i class="dot" style="background:#B06048"></i>سفالی</span></label>
-      </div>
-    </div>
-
-    <div class="grp">
-      <label class="lbl">🖼️ سبک طراحی تصویر</label>
-      <div class="opts">
-        <label class="opt"><input type="radio" name="istyle" value="pixar3d" checked><span>سه‌بعدی دیزنی / پیکسار <i class="lk">🔒 پیش‌فرض شما</i></span></label>
-        <label class="opt"><input type="radio" name="istyle" value="flat"><span>تخت مینیمال</span></label>
-        <label class="opt"><input type="radio" name="istyle" value="watercolor"><span>آبرنگ نرم</span></label>
-        <label class="opt"><input type="radio" name="istyle" value="kidsbook"><span>کتاب کودک</span></label>
-        <label class="opt"><input type="radio" name="istyle" value="photo"><span>عکس واقعی</span></label>
-      </div>
-    </div>
-
-    <div class="grp">
-      <label class="lbl">🎙️ نریشن</label>
-      <div class="opts">
-        <label class="opt"><input type="radio" name="voice" value="female" checked><span>👩 زن — صدای ثابت فعلی <i class="lk">🔒 پیش‌فرض شما</i></span></label>
-        <label class="opt"><input type="radio" name="voice" value="male"><span>👨 مرد</span></label>
-        <label class="opt"><input type="radio" name="voice" value="none"><span>🔇 بدون نریشن</span></label>
-      </div>
-    </div>
-
-    <div class="grp">
-      <label class="lbl">📦 سقف حجم کل پست</label>
-      <div class="opts">
-        <label class="opt"><input type="radio" name="maxmb" value="2"><span>۲ مگابایت (فشرده‌تر)</span></label>
-        <label class="opt"><input type="radio" name="maxmb" value="4" checked><span>۴ مگابایت <i class="lk">🔒 پیش‌فرض شما</i></span></label>
-        <label class="opt"><input type="radio" name="maxmb" value="8"><span>۸ مگابایت (باکیفیت‌تر)</span></label>
-      </div>
-    </div>
-
-    <div class="grp">
-      <label class="lbl">🧩 خروجی‌های همراه</label>
-      <label class="check"><input type="checkbox" id="xCombined" checked> نسخه‌ی یک‌تکه‌ی همه‌ی اسلایدها</label>
-      <label class="check"><input type="checkbox" id="xParts" checked> فایل‌های جدا برای تدوین خودم (PNG + MP3 هر اسلاید)</label>
-      <label class="check"><input type="checkbox" id="xCaption" checked> کپشن فارسی + هشتگ آماده</label>
-    </div>
-
-    <div class="est" id="est"></div>
-  </section>
-
-  <section class="card" style="text-align:center">
-    <h2>🚚 تحویل: گوگل درایو شما <span class="lk">🔒 ثابت</span></h2>
-    <p class="hint" style="margin-bottom:0">خروجی نهایی با اسم فارسی توی گوگل درایوتون آپلود می‌شه و لینک پخش/دانلودش رو تحویل می‌گیرید.</p>
-  </section>
-
-  <button class="gen" id="genBtn">🚀 جنریت کن — ثبت و شروع تولید</button>
-  <p class="gen-sub">با زدن این دکمه سفارش مستقیم ثبت می‌شه و توی صف تولید قرار می‌گیره؛ لازم نیست چیزی توی چت بفرستید 🌷</p>
+    </section>
+  </main>
 
   <div id="done">
-    <div>✅ سفارش شما ثبت شد!</div>
+    <div data-i18n="doneTitle">✅ سفارش ثبت شد!</div>
     <div class="code" id="orderCode"></div>
-    <div style="font-size:13.5px;color:#3c5a48">تولید در صف انجام است؛ خروجی نهایی در گوگل درایو شما تحویل داده می‌شود.<br>این کد را نگه دارید.</div>
+    <p data-i18n="doneText">سفارش در صف تولید است و خروجی در گوگل درایو تحویل داده می‌شود. کد را نگه دارید.</p>
   </div>
 
   <div id="fallback">
     <section class="card">
-      <h2>📤 متن سفارش شما</h2>
-      <p class="hint">ثبت خودکار روی این آدرس وصل نشد؛ متن سفارش آماده‌ست — کپی کنید و توی چت بفرستید:</p>
-      <textarea id="out" readonly></textarea>
+      <h2 data-i18n="fallbackTitle">ثبت سفارش بدون پیام</h2>
+      <p class="hint" data-i18n="fallbackText">فرم آماده سفارش در گیت‌هاب باز می‌شود و دیگر لازم نیست متن را در چت پیست کنید. اگر فرم خودکار باز نشد، دکمه سبز را بزنید.</p>
       <div class="mini">
-        <button id="copyBtn">📋 کپی متن سفارش</button>
-        <button id="dlBtn">⬇ دانلود فایل سفارش</button>
+        <a class="primary" id="issueBtn" href="#" target="_blank" rel="noopener" data-i18n="openIssue">باز کردن فرم آماده ثبت سفارش</a>
+        <button type="button" id="copyBtn" data-i18n="copy">📋 کپی پشتیبان</button>
+        <button type="button" id="dlBtn" data-i18n="download">⬇ دانلود پشتیبان</button>
       </div>
+      <textarea id="out" readonly></textarea>
     </section>
   </div>
 
-  <div class="mini" style="max-width:420px;margin:16px auto 0">
-    <button id="resetBtn">↺ بازگشت همه به پیش‌فرض‌های قفل‌شده</button>
-  </div>
+  <footer data-i18n="footer">قالب ریل مولتی‌کالر و تحویل در گوگل درایو ثابت است 🌷</footer>
+</div>
 
-  <footer>ساخته شده برای پیج دکتر کیانوش سالاریان 🌷<br>قالب اسلاید (سبک ریل مولتی‌کالر) و روش تحویل (گوگل درایو) ثابت و قفل‌شده‌اند.</footer>
+<div class="actionbar">
+  <div class="est" id="est"></div>
+  <button class="gen" id="genBtn">🚀 جنریت کن</button>
+  <button class="reset" id="resetBtn" data-i18n="reset">↺ پیش‌فرض‌ها</button>
 </div>
 <div id="toast"></div>
 
 <script>
 const $ = id => document.getElementById(id);
-const fa = n => String(n).replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
-const radio = name => document.querySelector(`input[name="${name}"]:checked`).value;
-const L = {
-  ctype:{carousel_av:'کاروسل صدا-تصویری',carousel_img:'کاروسل تصویری (بدون صدا)',reel:'ریل ویدیویی',single:'تک‌تصویر'},
-  palette:{multi:'مولتی‌کالر (هر اسلاید یک پالت از ۵ پالت ریل)',sage:'تک‌پالت مریم‌گلی',warm:'تک‌پالت هلویی گرم',mint:'تک‌پالت نعنایی',night:'تک‌پالت کهربایی',clay:'تک‌پالت سفالی'},
-  istyle:{pixar3d:'سه‌بعدی دیزنی/پیکسار',flat:'تخت مینیمال',watercolor:'آبرنگ نرم',kidsbook:'کتاب کودک',photo:'عکس واقعی'},
-  voice:{female:'زن (صدای ثابت فعلی)',male:'مرد',none:'بدون نریشن'}
+const REPO = 'kindlykaren48-del/Kiankhosrobot';
+let lang = 'fa';
+let directReady = null;
+let pendingClientId = '';
+
+const I18N = {
+  fa: {
+    docTitle:'استودیو تولید محتوا — دکتر کیانوش سالاریان', appTitle:'🎬 استودیو تولید محتوا',
+    appSub:'دکتر کیانوش سالاریان؛ سفارش تولید محتوای اینستاگرام بدون ارسال متن در چت',
+    statusChecking:'در حال بررسی اتصال ثبت مستقیم…', statusDirect:'ثبت مستقیم فعال است؛ با یک کلیک سفارش وارد صف تولید می‌شود.',
+    statusStatic:'ثبت بدون پیام فعال است؛ فرم آماده سفارش باز می‌شود و فقط تأیید نهایی آن لازم است.',
+    topicTitle:'📝 موضوع یا پرامپت', topicHint:'موضوع را بنویسید یا پیست کنید؛ بدون محدودیت کاراکتر.', topicLabel:'موضوع / پرامپت',
+    topicPlaceholder:'مثلاً: کم‌آبی نوزاد را از کجا بفهمیم؟ یا متن کامل را اینجا پیست کنید…', unlimited:'✍️ بدون محدودیت', characters:'کاراکتر', words:'کلمه',
+    titleLabel:'عنوان پیشنهادی (اختیاری)', titlePlaceholder:'خالی باشد، از بانک ۸۰ عنوان انتخاب می‌شود', fromList:'به جای موضوع من: «عنوان بعدی از لیست» 📋',
+    contentLanguage:'🌐 زبان محتوا', persian:'فارسی', english:'English', locked:'🔒 پیش‌فرض',
+    settingsTitle:'🎚️ تنظیمات تولید', settingsHint:'گزینه‌های دارای 🔒 همان پیش‌فرض‌های ثابت شما هستند.', contentType:'🎞️ نوع محتوا',
+    typeAV:'کاروسل صدا-تصویری', typeImg:'کاروسل تصویری', typeReel:'ریل ویدیویی', typeSingle:'تک‌تصویر',
+    slides:'تعداد اسلاید', default5:'🔒 پیش‌فرض ۵', narrationTime:'زمان کل نریشن', range3040:'🔒 ۳۰ تا ۴۰ ثانیه',
+    ratio:'📐 سایز', ratio45:'۴:۵ پست', ratio916:'۹:۱۶ ریل', ratio11:'۱:۱ مربع', resolution:'🔎 رزولوشن',
+    res720:'۷۲۰ سبک', res1080:'۱۰۸۰ استاندارد', res1440:'۱۴۴۰ باکیفیت', palette:'🎨 پالت رنگ', paletteMulti:'مولتی‌کالر',
+    sage:'مریم‌گلی', warm:'هلویی گرم', mint:'نعنایی', night:'کهربایی', clay:'سفالی', imageStyle:'🖼️ سبک تصویر',
+    pixar:'سه‌بعدی دیزنی / پیکسار', flat:'تخت مینیمال', watercolor:'آبرنگ نرم', kidsbook:'کتاب کودک', photo:'عکس واقعی',
+    voice:'🎙️ نریشن', female:'👩 زن', male:'👨 مرد', noVoice:'🔇 بدون نریشن', maxSize:'📦 سقف حجم پست',
+    mb2:'۲ مگابایت', mb4:'۴ مگابایت', mb8:'۸ مگابایت', extras:'🧩 خروجی‌های همراه', combined:'نسخه یک‌تکه',
+    parts:'فایل‌های جدای PNG و MP3', caption:'کپشن و هشتگ', reset:'↺ پیش‌فرض‌ها',
+    doneTitle:'✅ سفارش ثبت شد!', doneText:'سفارش در صف تولید است و خروجی در گوگل درایو تحویل داده می‌شود. کد را نگه دارید.',
+    fallbackTitle:'ثبت سفارش بدون پیام', fallbackText:'فرم آماده سفارش در گیت‌هاب باز می‌شود و دیگر لازم نیست متن را در چت پیست کنید. اگر فرم خودکار باز نشد، دکمه سبز را بزنید.',
+    openIssue:'باز کردن فرم آماده ثبت سفارش', copy:'📋 کپی پشتیبان', download:'⬇ دانلود پشتیبان', footer:'قالب ریل مولتی‌کالر و تحویل در گوگل درایو ثابت است 🌷',
+    generateDirect:'🚀 جنریت کن', generateStatic:'🚀 ثبت سفارش', generating:'⏳ در حال ثبت…', needTopic:'اول موضوع را بنویسید یا «عنوان بعدی از لیست» را انتخاب کنید 🙏',
+    registered:'ثبت شد ✅ کد سفارش: ', issueOpened:'فرم آماده سفارش باز شد؛ فقط تأیید نهایی را بزنید', issueTooLong:'متن برای فرم آماده خیلی طولانی است؛ از کپی یا دانلود پشتیبان استفاده کنید.', copied:'کپی شد ✅',
+    slidesWord:'اسلاید', secondsWord:'ثانیه', mbUnit:'مگابایت', approx:'حجم تقریبی', sizeOk:'✅ حجم مناسب', sizeWarn:'⚠️ هنگام ساخت فشرده می‌شود', deliveryShort:'🚚 گوگل درایو',
+    nextFromList:'عنوان بعدی از لیست', orderTitle:'🎬 سفارش تولید محتوا — دکتر کیانوش سالاریان', topicLine:'📌 موضوع', topicDetail:'📝 توضیح موضوع',
+    suggestedTitle:'🏷️ عنوان پیشنهادی', autoTitle:'با شما (از بانک ۸۰ عنوان)', contentLangLine:'🌐 زبان محتوا', typeLine:'🎞️ نوع', lockedTemplate:'قالب قفل‌شده ریل مولتی‌کالر',
+    sizeLine:'📐 سایز و رزولوشن', paletteLine:'🎨 پالت', imageLine:'🖼️ سبک تصویر', narrationLine:'🎙️ نریشن', noNarration:'ندارد', totalLabel:'مجموع', perSlide:'هر اسلاید حدود',
+    charsWord:'کاراکتر', maxLine:'📦 سقف حجم پست', outputsLine:'🧩 خروجی‌ها', combinedOut:'نسخه یک‌تکه', partsOut:'فایل‌های جدا (PNG+MP3)', captionOut:'کپشن و هشتگ', deliveryLine:'🚚 تحویل: گوگل درایو',
+    labels:{ctype:{carousel_av:'کاروسل صدا-تصویری',carousel_img:'کاروسل تصویری (بدون صدا)',reel:'ریل ویدیویی',single:'تک‌تصویر'},
+      palette:{multi:'مولتی‌کالر (هر اسلاید یک پالت از ۵ پالت ریل)',sage:'تک‌پالت مریم‌گلی',warm:'تک‌پالت هلویی گرم',mint:'تک‌پالت نعنایی',night:'تک‌پالت کهربایی',clay:'تک‌پالت سفالی'},
+      istyle:{pixar3d:'سه‌بعدی دیزنی/پیکسار',flat:'تخت مینیمال',watercolor:'آبرنگ نرم',kidsbook:'کتاب کودک',photo:'عکس واقعی'},
+      voice:{female:'زن (صدای ثابت فعلی)',male:'مرد',none:'بدون نریشن'}, clang:{fa:'فارسی',en:'انگلیسی'}}
+  },
+  en: {
+    docTitle:'Content Studio — DR. کیانوش سالاریان', appTitle:'🎬 Content Studio',
+    appSub:'DR. کیانوش سالاریان · Order Instagram content without pasting anything into chat',
+    statusChecking:'Checking the direct submission connection…', statusDirect:'Direct submission is active; one click adds the order to the production queue.',
+    statusStatic:'No-message submission is active; a prefilled order form opens and only needs final confirmation.',
+    topicTitle:'📝 Topic or prompt', topicHint:'Write or paste the topic here; there is no character limit.', topicLabel:'Topic / prompt',
+    topicPlaceholder:'For example: How can we recognize dehydration in a baby? Or paste the full text here…', unlimited:'✍️ Unlimited', characters:'characters', words:'words',
+    titleLabel:'Suggested title (optional)', titlePlaceholder:'Leave empty to choose from the bank of 80 titles', fromList:'Instead of my topic: “Next title from the list” 📋',
+    contentLanguage:'🌐 Content language', persian:'Persian', english:'English', locked:'🔒 Default',
+    settingsTitle:'🎚️ Production settings', settingsHint:'Options marked 🔒 are your saved defaults.', contentType:'🎞️ Content type',
+    typeAV:'Audio-visual carousel', typeImg:'Image carousel', typeReel:'Video reel', typeSingle:'Single image',
+    slides:'Number of slides', default5:'🔒 Default: 5', narrationTime:'Total narration time', range3040:'🔒 30–40 seconds',
+    ratio:'📐 Size', ratio45:'4:5 post', ratio916:'9:16 reel', ratio11:'1:1 square', resolution:'🔎 Resolution',
+    res720:'720 light', res1080:'1080 standard', res1440:'1440 high quality', palette:'🎨 Color palette', paletteMulti:'Multicolor',
+    sage:'Sage', warm:'Warm peach', mint:'Mint', night:'Amber', clay:'Clay', imageStyle:'🖼️ Image style',
+    pixar:'Disney / Pixar 3D', flat:'Minimal flat', watercolor:'Soft watercolor', kidsbook:'Children’s book', photo:'Real photo',
+    voice:'🎙️ Narration', female:'👩 Female', male:'👨 Male', noVoice:'🔇 No narration', maxSize:'📦 Maximum post size',
+    mb2:'2 MB', mb4:'4 MB', mb8:'8 MB', extras:'🧩 Included outputs', combined:'Combined version',
+    parts:'Separate PNG and MP3 files', caption:'Caption and hashtags', reset:'↺ Defaults',
+    doneTitle:'✅ Order submitted!', doneText:'Your order is in the production queue and the result will be delivered in Google Drive. Keep this code.',
+    fallbackTitle:'No-message order submission', fallbackText:'A prefilled GitHub order form opens, so nothing needs to be pasted into chat. If it does not open automatically, use the green button.',
+    openIssue:'Open the prefilled order form', copy:'📋 Backup copy', download:'⬇ Backup download', footer:'The multicolor reel template and Google Drive delivery remain fixed 🌷',
+    generateDirect:'🚀 Generate', generateStatic:'🚀 Submit order', generating:'⏳ Submitting…', needTopic:'First write a topic or select “Next title from the list” 🙏',
+    registered:'Submitted ✅ Order code: ', issueOpened:'The prefilled order form is open; only final confirmation is needed', issueTooLong:'This text is too long for the prefilled form; use the backup copy or download.', copied:'Copied ✅',
+    slidesWord:'slides', secondsWord:'seconds', mbUnit:'MB', approx:'Estimated size', sizeOk:'✅ Good size', sizeWarn:'⚠️ Will be compressed during production', deliveryShort:'🚚 Google Drive',
+    nextFromList:'Next title from the list', orderTitle:'🎬 Content production order — DR. کیانوش سالاریان', topicLine:'📌 Topic', topicDetail:'📝 Topic details',
+    suggestedTitle:'🏷️ Suggested title', autoTitle:'Your choice (from the bank of 80 titles)', contentLangLine:'🌐 Content language', typeLine:'🎞️ Type', lockedTemplate:'Locked multicolor reel template',
+    sizeLine:'📐 Size and resolution', paletteLine:'🎨 Palette', imageLine:'🖼️ Image style', narrationLine:'🎙️ Narration', noNarration:'None', totalLabel:'Total', perSlide:'About per slide',
+    charsWord:'characters', maxLine:'📦 Maximum post size', outputsLine:'🧩 Outputs', combinedOut:'Combined version', partsOut:'Separate files (PNG+MP3)', captionOut:'Caption and hashtags', deliveryLine:'🚚 Delivery: Google Drive',
+    labels:{ctype:{carousel_av:'Audio-visual carousel',carousel_img:'Image carousel (silent)',reel:'Video reel',single:'Single image'},
+      palette:{multi:'Multicolor (one of five reel palettes per slide)',sage:'Single sage palette',warm:'Single warm peach palette',mint:'Single mint palette',night:'Single amber palette',clay:'Single clay palette'},
+      istyle:{pixar3d:'Disney/Pixar 3D',flat:'Minimal flat',watercolor:'Soft watercolor',kidsbook:'Children’s book',photo:'Real photo'},
+      voice:{female:'Female (current fixed voice)',male:'Male',none:'No narration'}, clang:{fa:'Persian',en:'English'}}
+  }
 };
+
+function t(key){ return I18N[lang][key] || I18N.fa[key] || key; }
+function label(group, key){ return (I18N[lang].labels[group] || {})[key] || key; }
+function num(value){
+  const s = String(value);
+  return lang === 'fa' ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]).replace('.', '٫') : s;
+}
+const radio = name => document.querySelector(`input[name="${name}"]:checked`).value;
+
+function clientId(){
+  if (!pendingClientId) {
+    pendingClientId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('web-' + Date.now() + '-' + Math.random().toString(16).slice(2));
+  }
+  return pendingClientId;
+}
 function px(){
   const r = radio('ratio'), w = +radio('res');
-  const h = r==='4:5' ? Math.round(w*5/4) : r==='9:16' ? Math.round(w*16/9) : w;
+  const h = r === '4:5' ? Math.round(w * 5 / 4) : r === '9:16' ? Math.round(w * 16 / 9) : w;
   return {w, h, r};
 }
 function state(){
-  const slides = +$('slides').value, secs = +$('secs').value;
-  const voice = radio('voice');
-  const charsPerSlide = voice==='none' ? 0 : Math.max(30, Math.round(((secs - slides*0.5) * 10) / slides));
-  const p = px();
-  const estMB = (voice==='none' ? slides*0.9 : secs*0.045) * Math.pow((p.w*p.h)/(1080*1350), 0.7);
+  const slides = +$('slides').value, secs = +$('secs').value, voice = radio('voice'), p = px();
+  const charsPerSlide = voice === 'none' ? 0 : Math.max(30, Math.round(((secs - slides * 0.5) * 10) / slides));
+  const estMB = (voice === 'none' ? slides * 0.9 : secs * 0.045) * Math.pow((p.w * p.h) / (1080 * 1350), 0.7);
   return {
-    topic: $('topic').value.trim(), title: $('title').value.trim(),
-    fromList: $('fromList').checked,
-    ctype: radio('ctype'), slides, secs, voice, charsPerSlide,
-    ratio: p.r, width: p.w, height: p.h,
-    palette: radio('palette'), istyle: radio('istyle'),
-    maxMB: +radio('maxmb'),
-    extras: {combined: $('xCombined').checked, parts: $('xParts').checked, caption: $('xCaption').checked},
-    estMB
+    topic:$('topic').value.trim(), title:$('title').value.trim(), fromList:$('fromList').checked,
+    contentLang:radio('clang'), uiLang:lang, ctype:radio('ctype'), slides, secs, voice, charsPerSlide,
+    ratio:p.r, width:p.w, height:p.h, palette:radio('palette'), istyle:radio('istyle'), maxMB:+radio('maxmb'),
+    extras:{combined:$('xCombined').checked, parts:$('xParts').checked, caption:$('xCaption').checked}, estMB
   };
+}
+function orderText(s){
+  const topic = s.fromList ? t('nextFromList') : (s.topic || '—');
+  return [
+    t('orderTitle'),
+    `${t('topicLine')}: ${topic}`,
+    ...(s.topic && s.fromList ? [`${t('topicDetail')}: ${s.topic}`] : []),
+    `${t('suggestedTitle')}: ${s.title || t('autoTitle')}`,
+    `${t('contentLangLine')}: ${label('clang', s.contentLang)}`,
+    `${t('typeLine')}: ${label('ctype', s.ctype)} · ${num(s.slides)} ${t('slidesWord')} · ${t('lockedTemplate')}`,
+    `${t('sizeLine')}: ${num(s.ratio)} · ${num(s.width)}×${num(s.height)}`,
+    `${t('paletteLine')}: ${label('palette', s.palette)}`,
+    `${t('imageLine')}: ${label('istyle', s.istyle)}`,
+    s.voice === 'none' ? `${t('narrationLine')}: ${t('noNarration')}` : `${t('narrationLine')}: ${label('voice', s.voice)} · ${t('totalLabel')} ${num(s.secs)} ${t('secondsWord')} · ${t('perSlide')} ${num(s.charsPerSlide)} ${t('charsWord')}`,
+    `${t('maxLine')}: ${num(s.maxMB)} ${t('mbUnit')}`,
+    `${t('outputsLine')}: ` + [s.extras.combined && t('combinedOut'), s.extras.parts && t('partsOut'), s.extras.caption && t('captionOut')].filter(Boolean).join(' + '),
+    t('deliveryLine')
+  ].join('\n');
+}
+function issueUrl(s, payload){
+  const base = s.title || (s.fromList ? t('nextFromList') : s.topic) || 'Studio order';
+  const machine = {client_id:payload.client_id, contentLang:s.contentLang, uiLang:s.uiLang, fromList:s.fromList, ctype:s.ctype,
+    slides:s.slides, secs:s.secs, voice:s.voice, charsPerSlide:s.charsPerSlide, ratio:s.ratio, width:s.width, height:s.height,
+    palette:s.palette, istyle:s.istyle, maxMB:s.maxMB, extras:s.extras};
+  const body = payload.text + '\n\n<!-- STUDIO_ORDER ' + JSON.stringify(machine) + ' -->';
+  const params = new URLSearchParams({title:'[Studio] ' + base.slice(0, 72), body, labels:'studio-order'});
+  const url = `https://github.com/${REPO}/issues/new?${params.toString()}`;
+  return url.length <= 7500 ? url : null;
+}
+function refreshIssueLink(){
+  const s = state();
+  const payload = {...s, client_id:clientId(), text:orderText(s)};
+  const url = issueUrl(s, payload), btn = $('issueBtn');
+  btn.href = url || '#'; btn.classList.toggle('disabled', !url); btn.setAttribute('aria-disabled', String(!url));
+  return url;
 }
 function render(){
   const s = state();
-  $('charCount').textContent = fa($('topic').value.length);
-  $('wordCount').textContent = fa($('topic').value.trim() ? $('topic').value.trim().split(/\s+/).length : 0);
-  $('slidesNum').textContent = fa(s.slides);
-  $('secsNum').textContent = fa(s.secs);
-  $('pxOut').textContent = `— ${fa(s.width)}×${fa(s.height)} پیکسل`;
+  $('charCount').textContent = num($('topic').value.length);
+  $('wordCount').textContent = num($('topic').value.trim() ? $('topic').value.trim().split(/\s+/).length : 0);
+  $('slidesNum').textContent = num(s.slides); $('secsNum').textContent = num(s.secs);
+  $('pxOut').textContent = `${num(s.width)}×${num(s.height)}`;
   const noVoice = s.voice === 'none';
   $('secs').disabled = noVoice; $('secsPlus').disabled = noVoice; $('secsMinus').disabled = noVoice;
   const over = s.estMB > s.maxMB;
   $('est').className = 'est' + (over ? ' warn' : '');
-  $('est').innerHTML =
-    `🎞️ <b>${L.ctype[s.ctype]}</b> · ${fa(s.slides)} اسلاید · ${fa(s.width)}×${fa(s.height)}<br>` +
-    (noVoice ? `🔇 بدون نریشن — حجم تقریبی: <b>${fa(s.estMB.toFixed(2))} مگابایت</b>` :
-      `🎙️ نریشن <b>${L.voice[s.voice]}</b> · مجموع <b>${fa(s.secs)} ثانیه</b> · هر اسلاید ≈ <b>${fa(s.charsPerSlide)} کاراکتر</b> نریشن<br>`) +
-    (noVoice ? '' : `📦 حجم تقریبی کل پست: <b>${fa(s.estMB.toFixed(2))} مگابایت</b> از سقف <b>${fa(s.maxMB)} مگابایت</b> `) +
-    `<span class="badge ${over ? 'warnb' : 'ok'}">${over ? '⚠️ نزدیک سقف — موقع ساخت فشرده می‌شود' : '✅ حجم مناسب'}</span>`;
+  $('est').textContent = [
+    `${label('ctype', s.ctype)} · ${num(s.slides)} ${t('slidesWord')} · ${num(s.width)}×${num(s.height)}`,
+    noVoice ? t('noVoice') : `${label('voice', s.voice)} · ${num(s.secs)} ${t('secondsWord')}`,
+    `${t('approx')}: ${num(s.estMB.toFixed(2))}/${num(s.maxMB)} ${t('mbUnit')}`,
+    over ? t('sizeWarn') : t('sizeOk'), t('deliveryShort')
+  ].join(' · ');
   $('out').value = orderText(s);
+  refreshIssueLink();
 }
-function orderText(s){
-  return [
-    '🎬 سفارش تولید محتوا — دکتر کیانوش سالاریان',
-    '📌 موضوع: ' + (s.fromList ? 'عنوان بعدی از لیست' : (s.topic || '—')),
-    ...(s.topic && s.fromList ? ['📝 توضیح موضوع: ' + s.topic] : []),
-    '🏷️ عنوان پیشنهادی: ' + (s.title || 'با شما (از بانک ۸۰ عنوان)'),
-    `🎞️ نوع: ${L.ctype[s.ctype]} — ${fa(s.slides)} اسلاید — قالب قفل‌شده‌ی ریل مولتی‌کالر`,
-    `📐 سایز: ${fa(s.ratio)} · رزولوشن: ${fa(s.width)}×${fa(s.height)}`,
-    `🎨 پالت: ${L.palette[s.palette]} | 🖼️ سبک تصویر: ${L.istyle[s.istyle]}`,
-    s.voice==='none' ? '🎙️ نریشن: ندارد' :
-      `🎙️ نریشن: ${L.voice[s.voice]} — مجموع ${fa(s.secs)} ثانیه (هر اسلاید ≈ ${fa(s.charsPerSlide)} کاراکتر)`,
-    `📦 سقف حجم پست: ${fa(s.maxMB)} مگابایت`,
-    '🧩 خروجی‌ها: ' + [s.extras.combined&&'نسخه یک‌تکه', s.extras.parts&&'فایل‌های جدا (PNG+MP3)', s.extras.caption&&'کپشن و هشتگ'].filter(Boolean).join(' + '),
-    '🚚 تحویل: گوگل درایو'
-  ].join('\n');
+function toast(message){ const el=$('toast'); el.textContent=message; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'), 3000); }
+function step(id, d){ const el=$(id); el.value=Math.min(+el.max, Math.max(+el.min, +el.value + d * (+el.step || 1))); pendingClientId=''; render(); }
+function updateGenerateLabel(){ if (!$('genBtn').disabled) $('genBtn').textContent = directReady === false ? t('generateStatic') : t('generateDirect'); }
+function setStatus(){
+  const box = $('serverStatus');
+  box.className = 'status' + (directReady === true ? ' direct' : directReady === false ? ' static' : '');
+  $('statusText').textContent = directReady === null ? t('statusChecking') : directReady ? t('statusDirect') : t('statusStatic');
+  updateGenerateLabel();
 }
-function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
-function step(id, d){ const el=$(id); el.value = Math.min(+el.max, Math.max(+el.min, +el.value + d*(+el.step||1))); render(); }
-document.querySelectorAll('input,textarea').forEach(el => el.addEventListener('input', render));
-$('slidesPlus').onclick=()=>step('slides',1); $('slidesMinus').onclick=()=>step('slides',-1);
-$('secsPlus').onclick=()=>step('secs',1); $('secsMinus').onclick=()=>step('secs',-1);
-
+function setLang(next, save = true){
+  lang = next === 'en' ? 'en' : 'fa';
+  document.documentElement.lang = lang; document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr'; document.title = t('docTitle');
+  document.querySelectorAll('[data-i18n]').forEach(el => { const value=t(el.dataset.i18n); if (typeof value === 'string') el.textContent=value; });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder=t(el.dataset.i18nPh); });
+  $('langFa').classList.toggle('active', lang === 'fa'); $('langEn').classList.toggle('active', lang === 'en');
+  $('langFa').setAttribute('aria-pressed', String(lang === 'fa')); $('langEn').setAttribute('aria-pressed', String(lang === 'en'));
+  if (save) { try { localStorage.setItem('studioLang', lang); } catch(e) {} }
+  pendingClientId=''; setStatus(); render();
+}
+async function fetchWithTimeout(url, options, timeout){
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), timeout);
+  try { return await fetch(url, {...options, signal:ctl.signal}); }
+  finally { clearTimeout(timer); }
+}
+async function checkDirect(){
+  try {
+    const r = await fetchWithTimeout('api/health', {method:'GET', cache:'no-store'}, 2600);
+    if (!r.ok) throw new Error('not direct');
+    const j = await r.json(); directReady = !!(j && j.ok && j.service === 'studio');
+  } catch(e) { directReady = false; }
+  setStatus();
+}
+async function postOrder(payload){
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const r = await fetchWithTimeout('api/generate', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload), cache:'no-store'}, 12000);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json(); if (!j.ok) throw new Error('not ok'); return j;
+    } catch(e) { lastError=e; if (attempt === 0) await new Promise(resolve=>setTimeout(resolve, 600)); }
+  }
+  throw lastError;
+}
+function showIssue(url, payload, openNow){
+  $('fallback').style.display='block'; $('done').style.display='none'; $('out').value=payload.text;
+  const btn=$('issueBtn'); btn.href=url || '#'; btn.classList.toggle('disabled', !url); btn.setAttribute('aria-disabled', String(!url));
+  if (url && openNow) window.open(url, '_blank', 'noopener');
+  $('fallback').scrollIntoView({behavior:'smooth', block:'nearest'});
+  toast(url ? t('issueOpened') : t('issueTooLong'));
+}
 async function generate(){
   const s = state();
-  if (!s.topic && !s.fromList){
-    $('topic').classList.add('err'); $('topic').focus();
-    toast('اول موضوع رو بنویسید یا تیک «عنوان بعدی از لیست» رو بزنید 🙏');
-    setTimeout(()=>$('topic').classList.remove('err'), 2500);
-    return;
+  if (!s.topic && !s.fromList) {
+    $('topic').classList.add('err'); $('topic').focus(); toast(t('needTopic'));
+    setTimeout(()=>$('topic').classList.remove('err'), 2500); return;
   }
-  const btn = $('genBtn'); btn.disabled = true; btn.textContent = '⏳ در حال ثبت سفارش…';
-  const payload = {...s, text: orderText(s), at: new Date().toISOString()};
-  try{
-    const ctl = new AbortController(); const to = setTimeout(()=>ctl.abort(), 4000);
-    const r = await fetch('api/generate', {method:'POST', headers:{'Content-Type':'application/json'},
-                                           body: JSON.stringify(payload), signal: ctl.signal});
-    clearTimeout(to);
-    if (!r.ok) throw new Error('bad status');
-    const j = await r.json();
-    if (!j.ok) throw new Error('not ok');
-    $('orderCode').textContent = fa(j.order);
-    $('done').style.display = 'block';
-    $('fallback').style.display = 'none';
-    $('done').scrollIntoView({behavior:'smooth'});
-    toast('ثبت شد ✅ کد سفارش: ' + fa(j.order));
-  }catch(e){
-    $('fallback').style.display = 'block';
-    $('out').value = payload.text;
-    try{ await navigator.clipboard.writeText(payload.text); }catch(_){}
-    $('fallback').scrollIntoView({behavior:'smooth'});
-    toast('متن سفارش آماده و کپی شد؛ توی چت پیست کنید 📋');
-  }finally{
-    btn.disabled = false; btn.textContent = '🚀 جنریت کن — ثبت و شروع تولید';
-  }
+  const payload = {...s, client_id:clientId(), text:orderText(s), at:new Date().toISOString()};
+  const url = issueUrl(s, payload);
+  if (directReady === false) { showIssue(url, payload, true); return; }
+  const btn=$('genBtn'); btn.disabled=true; btn.textContent=t('generating');
+  try {
+    const j = await postOrder(payload); directReady=true; setStatus();
+    $('orderCode').textContent = num(j.order); $('done').style.display='block'; $('fallback').style.display='none';
+    $('done').scrollIntoView({behavior:'smooth', block:'nearest'}); toast(t('registered') + num(j.order));
+  } catch(e) {
+    directReady=false; setStatus(); showIssue(url, payload, true);
+  } finally { btn.disabled=false; updateGenerateLabel(); }
 }
-$('genBtn').onclick = generate;
-$('copyBtn').onclick = async () => {
-  try{ await navigator.clipboard.writeText($('out').value); }
-  catch(e){ $('out').select(); document.execCommand('copy'); }
-  toast('کپی شد ✅');
-};
-$('dlBtn').onclick = () => {
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([$('out').value],{type:'text/plain;charset=utf-8'}));
-  a.download='content-order.txt'; a.click(); URL.revokeObjectURL(a.href);
-};
-$('resetBtn').onclick = () => { location.reload(); };
-render();
+
+document.querySelectorAll('input,textarea').forEach(el => el.addEventListener('input', () => { pendingClientId=''; render(); }));
+$('slidesPlus').onclick=()=>step('slides',1); $('slidesMinus').onclick=()=>step('slides',-1);
+$('secsPlus').onclick=()=>step('secs',1); $('secsMinus').onclick=()=>step('secs',-1);
+$('langFa').onclick=()=>setLang('fa'); $('langEn').onclick=()=>setLang('en');
+$('genBtn').onclick=generate;
+$('copyBtn').onclick=async()=>{ try{await navigator.clipboard.writeText($('out').value);}catch(e){$('out').select(); document.execCommand('copy');} toast(t('copied')); };
+$('dlBtn').onclick=()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([$('out').value],{type:'text/plain;charset=utf-8'})); a.download='studio-order.txt'; a.click(); URL.revokeObjectURL(a.href); };
+$('resetBtn').onclick=()=>location.reload();
+
+let savedLang='fa'; try { savedLang=localStorage.getItem('studioLang') || 'fa'; } catch(e) {}
+setLang(savedLang, false);
+checkDirect();
 </script>
 </body>
 </html>
