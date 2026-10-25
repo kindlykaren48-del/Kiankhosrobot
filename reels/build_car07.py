@@ -79,15 +79,31 @@ def dur_of(path):
 
 
 def make_clip(slide_png, mp3, out_mp4):
-    """ویدیوی یک اسلاید: تصویر ثابت ۴:۵ + نریشن (AAC)، مناسب اسلاید ویدیویی کاروسل."""
+    """ویدیوی یک اسلاید: تصویر ثابت ۴:۵ + نریشن (AAC)، مناسب اسلاید ویدیویی کاروسل.
+    مدت کلیپ = مدت نریشن + ۰٫۵ ثانیه مکث پایانی (قانون: مجموع کاروسل ۳۰ تا ۴۰ ثانیه)."""
+    d = dur_of(mp3)
     cmd = [FF, "-y", "-v", "error",
            "-loop", "1", "-framerate", "30", "-i", slide_png,
            "-i", mp3,
-           "-af", "apad=pad_dur=0.7",
+           "-af", "apad",
            "-c:v", "libx264", "-tune", "stillimage", "-pix_fmt", "yuv420p",
            "-r", "30", "-c:a", "aac", "-b:a", "128k",
-           "-shortest", "-movflags", "+faststart", out_mp4]
+           "-t", f"{d + 0.5:.2f}", "-movflags", "+faststart", out_mp4]
     subprocess.run(cmd, check=True)
+
+
+def make_combined(clips, out_mp4):
+    """نسخهٔ یک‌تکه از همهٔ کلیپ‌ها پشت سر هم (بدون رندر مجدد)."""
+    lst = out_mp4 + ".txt"
+    with open(lst, "w", encoding="utf-8") as f:
+        for c in clips:
+            f.write(f"file '{os.path.abspath(c)}'\n")
+    try:
+        subprocess.run([FF, "-y", "-v", "error", "-f", "concat", "-safe", "0",
+                        "-i", lst, "-c", "copy", "-movflags", "+faststart",
+                        out_mp4], check=True)
+    finally:
+        os.remove(lst)
 
 
 def main():
@@ -107,13 +123,19 @@ def main():
         print(f"clip {i}: {os.path.basename(mp4)}  {d:.1f}s  "
               f"{os.path.getsize(mp4) // 1024}KB  (صدا {dur_of(mp3):.1f}s)")
 
+    combined = os.path.join(outdir, f"{SLUG}_combined.mp4")
+    make_combined(clips, combined)
+    print(f"combined: {os.path.basename(combined)}  {dur_of(combined):.1f}s  "
+          f"{os.path.getsize(combined) // 1024}KB")
+
     full = os.path.join(outdir, f"{SLUG}_full.zip")
     with zipfile.ZipFile(full, "w", zipfile.ZIP_DEFLATED) as z:
-        for p in files + clips + [os.path.join(outdir, f"{SLUG}_narration_{i:02d}.mp3")
+        for p in files + clips + [combined] + [os.path.join(outdir, f"{SLUG}_narration_{i:02d}.mp3")
                                   for i in range(1, len(files) + 1)] + [cap_path]:
             z.write(p, os.path.basename(p))
-    print(f"[✓] {SLUG}: {len(files)} اسلاید + {len(clips)} ویدیو "
-          f"(مجموع {total:.0f} ثانیه) + ZIP کامل {os.path.getsize(full) // 1024}KB")
+    ok = "✓ در بازهٔ ۳۰ تا ۴۰ ثانیه" if 30 <= total <= 40 else "✗ خارج از بازهٔ ۳۰-۴۰!"
+    print(f"[✓] {SLUG}: {len(files)} اسلاید + {len(clips)} ویدیو + نسخهٔ یک‌تکه "
+          f"(مجموع {total:.1f} ثانیه — {ok}) + ZIP کامل {os.path.getsize(full) // 1024}KB")
 
 
 if __name__ == "__main__":
