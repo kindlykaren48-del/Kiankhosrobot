@@ -12,6 +12,7 @@
     --sage:#487A68; --warm:#D65C4C; --mint:#3A7084; --night:#C47A3E; --clay:#B06048;
   }
   *{box-sizing:border-box}
+  [hidden]{display:none !important}
   body{font-family:'Vazirmatn',Tahoma,sans-serif;margin:0;color:var(--ink);font-size:14px;
        background:linear-gradient(180deg,#FDF6EC 0%,#F3EFE6 45%,#E9F0E9 100%);min-height:100vh}
   .wrap{max-width:1180px;margin:0 auto;padding:10px 10px 118px}
@@ -84,8 +85,8 @@
   .est.warn{background:#FFF3E8;border-color:#F1CDA8}
   .gen{border:none;cursor:pointer;color:#fff;background:linear-gradient(120deg,var(--warm),var(--night) 55%,var(--sage));
        padding:13px 20px;border-radius:13px;font-family:inherit;font-size:17px;font-weight:900;white-space:nowrap;
-       box-shadow:0 8px 20px rgba(214,92,76,.28)}
-  .gen:disabled{opacity:.6}
+       box-shadow:0 8px 20px rgba(214,92,76,.28);text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+  .gen:disabled{opacity:.6}.gen.disabled{opacity:.55;pointer-events:none}
   .reset{background:#fff;color:var(--sage);border:1.5px solid var(--sage);cursor:pointer;padding:11px 12px;
        border-radius:12px;font-family:inherit;font-size:12px;font-weight:800;white-space:nowrap}
   #done{display:none;margin-top:10px;background:#EFF8F1;border:2px solid #9ED1AF;border-radius:14px;padding:13px;text-align:center;scroll-margin-bottom:150px}
@@ -261,7 +262,7 @@
   <div id="fallback">
     <section class="card">
       <h2 data-i18n="fallbackTitle">ثبت سفارش بدون پیام</h2>
-      <p class="hint" data-i18n="fallbackText">فرم آماده سفارش در گیت‌هاب باز می‌شود و دیگر لازم نیست متن را در چت پیست کنید. اگر فرم خودکار باز نشد، دکمه سبز را بزنید.</p>
+      <p class="hint" data-i18n="fallbackText">دکمه «ثبت سفارش» در پایین صفحه یک لینک مستقیم به فرم آماده گیت‌هاب است؛ لازم نیست متن را در چت پیست کنید.</p>
       <div class="mini">
         <a class="primary" id="issueBtn" href="#" target="_blank" rel="noopener" data-i18n="openIssue">باز کردن فرم آماده ثبت سفارش</a>
         <button type="button" id="copyBtn" data-i18n="copy">📋 کپی پشتیبان</button>
@@ -277,6 +278,7 @@
 <div class="actionbar">
   <div class="est" id="est"></div>
   <button class="gen" id="genBtn">🚀 جنریت کن</button>
+  <a class="gen" id="genLink" href="#" hidden>🚀 ثبت سفارش</a>
   <button class="reset" id="resetBtn" data-i18n="reset">↺ پیش‌فرض‌ها</button>
 </div>
 <div id="toast"></div>
@@ -309,7 +311,7 @@ const I18N = {
     mb2:'۲ مگابایت', mb4:'۴ مگابایت', mb8:'۸ مگابایت', extras:'🧩 خروجی‌های همراه', combined:'نسخه یک‌تکه',
     parts:'فایل‌های جدای PNG و MP3', caption:'کپشن و هشتگ', reset:'↺ پیش‌فرض‌ها',
     doneTitle:'✅ سفارش ثبت شد!', doneText:'سفارش در صف تولید است و خروجی در گوگل درایو تحویل داده می‌شود. کد را نگه دارید.',
-    fallbackTitle:'ثبت سفارش بدون پیام', fallbackText:'فرم آماده سفارش در گیت‌هاب باز می‌شود و دیگر لازم نیست متن را در چت پیست کنید. اگر فرم خودکار باز نشد، دکمه سبز را بزنید.',
+    fallbackTitle:'ثبت سفارش بدون پیام', fallbackText:'دکمه «ثبت سفارش» در پایین صفحه یک لینک مستقیم به فرم آماده گیت‌هاب است؛ لازم نیست متن را در چت پیست کنید.',
     openIssue:'باز کردن فرم آماده ثبت سفارش', copy:'📋 کپی پشتیبان', download:'⬇ دانلود پشتیبان', footer:'قالب ریل مولتی‌کالر و تحویل در گوگل درایو ثابت است 🌷',
     generateDirect:'🚀 جنریت کن', generateStatic:'🚀 ثبت سفارش', generating:'⏳ در حال ثبت…', needTopic:'اول موضوع را بنویسید یا «عنوان بعدی از لیست» را انتخاب کنید 🙏',
     registered:'ثبت شد ✅ کد سفارش: ', issueOpened:'فرم آماده سفارش باز شد؛ فقط تأیید نهایی را بزنید', issueTooLong:'متن برای فرم آماده خیلی طولانی است؛ از کپی یا دانلود پشتیبان استفاده کنید.', copied:'کپی شد ✅',
@@ -343,7 +345,7 @@ const I18N = {
     mb2:'2 MB', mb4:'4 MB', mb8:'8 MB', extras:'🧩 Included outputs', combined:'Combined version',
     parts:'Separate PNG and MP3 files', caption:'Caption and hashtags', reset:'↺ Defaults',
     doneTitle:'✅ Order submitted!', doneText:'Your order is in the production queue and the result will be delivered in Google Drive. Keep this code.',
-    fallbackTitle:'No-message order submission', fallbackText:'A prefilled GitHub order form opens, so nothing needs to be pasted into chat. If it does not open automatically, use the green button.',
+    fallbackTitle:'No-message order submission', fallbackText:'The Submit order button at the bottom is a direct link to the prefilled GitHub form; nothing needs to be pasted into chat.',
     openIssue:'Open the prefilled order form', copy:'📋 Backup copy', download:'⬇ Backup download', footer:'The multicolor reel template and Google Drive delivery remain fixed 🌷',
     generateDirect:'🚀 Generate', generateStatic:'🚀 Submit order', generating:'⏳ Submitting…', needTopic:'First write a topic or select “Next title from the list” 🙏',
     registered:'Submitted ✅ Order code: ', issueOpened:'The prefilled order form is open; only final confirmation is needed', issueTooLong:'This text is too long for the prefilled form; use the backup copy or download.', copied:'Copied ✅',
@@ -420,8 +422,10 @@ function issueUrl(s, payload){
 function refreshIssueLink(){
   const s = state();
   const payload = {...s, client_id:clientId(), text:orderText(s)};
-  const url = issueUrl(s, payload), btn = $('issueBtn');
-  btn.href = url || '#'; btn.classList.toggle('disabled', !url); btn.setAttribute('aria-disabled', String(!url));
+  const url = issueUrl(s, payload);
+  [$('issueBtn'), $('genLink')].forEach(btn => {
+    btn.href = url || '#'; btn.classList.toggle('disabled', !url); btn.setAttribute('aria-disabled', String(!url));
+  });
   return url;
 }
 function render(){
@@ -445,12 +449,26 @@ function render(){
 }
 function toast(message){ const el=$('toast'); el.textContent=message; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'), 3000); }
 function step(id, d){ const el=$(id); el.value=Math.min(+el.max, Math.max(+el.min, +el.value + d * (+el.step || 1))); pendingClientId=''; render(); }
-function updateGenerateLabel(){ if (!$('genBtn').disabled) $('genBtn').textContent = directReady === false ? t('generateStatic') : t('generateDirect'); }
+function updateGenerateLabel(){
+  if (!$('genBtn').disabled) $('genBtn').textContent = directReady === false ? t('generateStatic') : t('generateDirect');
+  $('genLink').textContent = t('generateStatic');
+}
 function setStatus(){
   const box = $('serverStatus');
-  box.className = 'status' + (directReady === true ? ' direct' : directReady === false ? ' static' : '');
+  const staticMode = directReady === false;
+  box.className = 'status' + (directReady === true ? ' direct' : staticMode ? ' static' : '');
   $('statusText').textContent = directReady === null ? t('statusChecking') : directReady ? t('statusDirect') : t('statusStatic');
+  $('genBtn').hidden = staticMode;
+  $('genLink').hidden = !staticMode;
   updateGenerateLabel();
+}
+function validateOrder(){
+  const s = state();
+  if (!s.topic && !s.fromList) {
+    $('topic').classList.add('err'); $('topic').focus(); toast(t('needTopic'));
+    setTimeout(()=>$('topic').classList.remove('err'), 2500); return null;
+  }
+  return s;
 }
 function setLang(next, save = true){
   lang = next === 'en' ? 'en' : 'fa';
@@ -486,30 +504,39 @@ async function postOrder(payload){
   }
   throw lastError;
 }
-function showIssue(url, payload, openNow){
+function showIssue(url, payload){
   $('fallback').style.display='block'; $('done').style.display='none'; $('out').value=payload.text;
-  const btn=$('issueBtn'); btn.href=url || '#'; btn.classList.toggle('disabled', !url); btn.setAttribute('aria-disabled', String(!url));
-  if (url && openNow) window.open(url, '_blank', 'noopener');
-  $('fallback').scrollIntoView({behavior:'smooth', block:'nearest'});
+  [$('issueBtn'), $('genLink')].forEach(btn => {
+    btn.href=url || '#'; btn.classList.toggle('disabled', !url); btn.setAttribute('aria-disabled', String(!url));
+  });
+  $('fallback').scrollIntoView({behavior:'smooth', block:'start'});
   toast(url ? t('issueOpened') : t('issueTooLong'));
 }
 async function generate(){
-  const s = state();
-  if (!s.topic && !s.fromList) {
-    $('topic').classList.add('err'); $('topic').focus(); toast(t('needTopic'));
-    setTimeout(()=>$('topic').classList.remove('err'), 2500); return;
-  }
+  const s = validateOrder(); if (!s) return;
   const payload = {...s, client_id:clientId(), text:orderText(s), at:new Date().toISOString()};
   const url = issueUrl(s, payload);
-  if (directReady === false) { showIssue(url, payload, true); return; }
+  if (directReady === false) { showIssue(url, payload); return; }
   const btn=$('genBtn'); btn.disabled=true; btn.textContent=t('generating');
   try {
     const j = await postOrder(payload); directReady=true; setStatus();
     $('orderCode').textContent = num(j.order); $('done').style.display='block'; $('fallback').style.display='none';
     $('done').scrollIntoView({behavior:'smooth', block:'nearest'}); toast(t('registered') + num(j.order));
   } catch(e) {
-    directReady=false; setStatus(); showIssue(url, payload, true);
+    directReady=false; setStatus(); showIssue(url, payload);
   } finally { btn.disabled=false; updateGenerateLabel(); }
+}
+function openStaticOrder(event){
+  const s = validateOrder();
+  if (!s) { event.preventDefault(); return; }
+  const url = refreshIssueLink();
+  if (!url) {
+    event.preventDefault();
+    showIssue(null, {...s, text:orderText(s)});
+    return;
+  }
+  event.currentTarget.href = url;
+  toast(t('issueOpened'));
 }
 
 document.querySelectorAll('input,textarea').forEach(el => el.addEventListener('input', () => { pendingClientId=''; render(); }));
@@ -517,6 +544,7 @@ $('slidesPlus').onclick=()=>step('slides',1); $('slidesMinus').onclick=()=>step(
 $('secsPlus').onclick=()=>step('secs',1); $('secsMinus').onclick=()=>step('secs',-1);
 $('langFa').onclick=()=>setLang('fa'); $('langEn').onclick=()=>setLang('en');
 $('genBtn').onclick=generate;
+$('genLink').onclick=openStaticOrder;
 $('copyBtn').onclick=async()=>{ try{await navigator.clipboard.writeText($('out').value);}catch(e){$('out').select(); document.execCommand('copy');} toast(t('copied')); };
 $('dlBtn').onclick=()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([$('out').value],{type:'text/plain;charset=utf-8'})); a.download='studio-order.txt'; a.click(); URL.revokeObjectURL(a.href); };
 $('resetBtn').onclick=()=>location.reload();
