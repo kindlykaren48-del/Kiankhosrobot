@@ -254,17 +254,20 @@
   </main>
 
   <div id="done">
-    <div data-i18n="doneTitle">✅ سفارش ثبت شد!</div>
+    <div data-i18n="doneTitle">✅ سفارش همین‌جا ذخیره شد!</div>
     <div class="code" id="orderCode"></div>
-    <p data-i18n="doneText">سفارش در صف تولید است و خروجی در گوگل درایو تحویل داده می‌شود. کد را نگه دارید.</p>
+    <p data-i18n="doneText">همه تنظیمات در صف ساخت همین محیط کاری ذخیره شده است. فقط همین کد کوتاه را در همین چت بفرستید تا ساخته شود.</p>
+    <div class="mini" style="max-width:420px;margin-inline:auto">
+      <button type="button" id="copyPickupBtn" data-i18n="copyPickup">📋 کپی دستور ساخت</button>
+    </div>
   </div>
 
   <div id="fallback">
     <section class="card">
-      <h2 data-i18n="fallbackTitle">ثبت سفارش بدون پیام</h2>
-      <p class="hint" data-i18n="fallbackText">دکمه «ثبت سفارش» در پایین صفحه یک لینک مستقیم به فرم آماده گیت‌هاب است؛ لازم نیست متن را در چت پیست کنید.</p>
+      <h2 data-i18n="fallbackTitle">نسخه عمومی وصل نیست</h2>
+      <p class="hint" data-i18n="fallbackText">برای مسیر اصلی، استودیو را از همین چت باز کنید تا سفارش مستقیم در صف این محیط کاری ذخیره شود. فرم گیت‌هاب فقط پشتیبان است.</p>
       <div class="mini">
-        <a class="primary" id="issueBtn" href="#" target="_blank" rel="noopener" data-i18n="openIssue">باز کردن فرم آماده ثبت سفارش</a>
+        <a class="primary" id="issueBtn" href="#" target="_blank" rel="noopener" data-i18n="openIssue">باز کردن فرم پشتیبان گیت‌هاب</a>
         <button type="button" id="copyBtn" data-i18n="copy">📋 کپی پشتیبان</button>
         <button type="button" id="dlBtn" data-i18n="download">⬇ دانلود پشتیبان</button>
       </div>
@@ -289,13 +292,14 @@ const REPO = 'kindlykaren48-del/Kiankhosrobot';
 let lang = 'fa';
 let directReady = null;
 let pendingClientId = '';
+let lastPickupCode = '';
 
 const I18N = {
   fa: {
     docTitle:'استودیو تولید محتوا — دکتر کیانوش سالاریان', appTitle:'🎬 استودیو تولید محتوا',
     appSub:'دکتر کیانوش سالاریان؛ سفارش تولید محتوای اینستاگرام بدون ارسال متن در چت',
-    statusChecking:'در حال بررسی اتصال ثبت مستقیم…', statusDirect:'ثبت مستقیم فعال است؛ با یک کلیک سفارش وارد صف تولید می‌شود.',
-    statusStatic:'ثبت بدون پیام فعال است؛ فرم آماده سفارش باز می‌شود و فقط تأیید نهایی آن لازم است.',
+    statusChecking:'در حال بررسی اتصال به صف ساخت همین محیط کاری…', statusDirect:'متصل به همین محیط کاری است؛ سفارش و همه تنظیمات مستقیم همین‌جا ذخیره می‌شود.',
+    statusStatic:'این نسخه عمومی به صف این محیط کاری وصل نیست؛ برای کد ساخت کوتاه، استودیو را از همین چت باز کنید.',
     topicTitle:'📝 موضوع یا پرامپت', topicHint:'موضوع را بنویسید یا پیست کنید؛ بدون محدودیت کاراکتر.', topicLabel:'موضوع / پرامپت',
     topicPlaceholder:'مثلاً: کم‌آبی نوزاد را از کجا بفهمیم؟ یا متن کامل را اینجا پیست کنید…', unlimited:'✍️ بدون محدودیت', characters:'کاراکتر', words:'کلمه',
     titleLabel:'عنوان پیشنهادی (اختیاری)', titlePlaceholder:'خالی باشد، از بانک ۸۰ عنوان انتخاب می‌شود', fromList:'به جای موضوع من: «عنوان بعدی از لیست» 📋',
@@ -310,11 +314,12 @@ const I18N = {
     voice:'🎙️ نریشن', female:'👩 زن', male:'👨 مرد', noVoice:'🔇 بدون نریشن', maxSize:'📦 سقف حجم پست',
     mb2:'۲ مگابایت', mb4:'۴ مگابایت', mb8:'۸ مگابایت', extras:'🧩 خروجی‌های همراه', combined:'نسخه یک‌تکه',
     parts:'فایل‌های جدای PNG و MP3', caption:'کپشن و هشتگ', reset:'↺ پیش‌فرض‌ها',
-    doneTitle:'✅ سفارش ثبت شد!', doneText:'سفارش در صف تولید است و خروجی در گوگل درایو تحویل داده می‌شود. کد را نگه دارید.',
-    fallbackTitle:'ثبت سفارش بدون پیام', fallbackText:'دکمه «ثبت سفارش» در پایین صفحه یک لینک مستقیم به فرم آماده گیت‌هاب است؛ لازم نیست متن را در چت پیست کنید.',
-    openIssue:'باز کردن فرم آماده ثبت سفارش', copy:'📋 کپی پشتیبان', download:'⬇ دانلود پشتیبان', footer:'قالب ریل مولتی‌کالر و تحویل در گوگل درایو ثابت است 🌷',
-    generateDirect:'🚀 جنریت کن', generateStatic:'🚀 ثبت سفارش', generating:'⏳ در حال ثبت…', needTopic:'اول موضوع را بنویسید یا «عنوان بعدی از لیست» را انتخاب کنید 🙏',
-    registered:'ثبت شد ✅ کد سفارش: ', issueOpened:'فرم آماده سفارش باز شد؛ فقط تأیید نهایی را بزنید', issueTooLong:'متن برای فرم آماده خیلی طولانی است؛ از کپی یا دانلود پشتیبان استفاده کنید.', copied:'کپی شد ✅',
+    doneTitle:'✅ سفارش همین‌جا ذخیره شد!', doneText:'همه تنظیمات در صف ساخت همین محیط کاری ذخیره شده است. فقط همین کد کوتاه را در همین چت بفرستید تا ساخته شود.',
+    copyPickup:'📋 کپی دستور ساخت', buildWord:'بساز', pickupCopied:'دستور ساخت کپی شد؛ همین‌جا ارسال کنید ✅',
+    fallbackTitle:'نسخه عمومی وصل نیست', fallbackText:'برای مسیر اصلی، استودیو را از همین چت باز کنید تا سفارش مستقیم در صف این محیط کاری ذخیره شود. فرم گیت‌هاب فقط پشتیبان است.',
+    openIssue:'باز کردن فرم پشتیبان گیت‌هاب', copy:'📋 کپی پشتیبان', download:'⬇ دانلود پشتیبان', footer:'قالب ریل مولتی‌کالر و تحویل در گوگل درایو ثابت است 🌷',
+    generateDirect:'🚀 جنریت کن', generateStatic:'🚀 فرم پشتیبان', generating:'⏳ در حال ذخیره…', needTopic:'اول موضوع را بنویسید یا «عنوان بعدی از لیست» را انتخاب کنید 🙏',
+    registered:'ذخیره شد ✅ کد ساخت: ', issueOpened:'فرم پشتیبان باز شد؛ مسیر اصلی استودیو داخل همین چت است', issueTooLong:'متن برای فرم آماده خیلی طولانی است؛ از کپی یا دانلود پشتیبان استفاده کنید.', copied:'کپی شد ✅',
     slidesWord:'اسلاید', secondsWord:'ثانیه', mbUnit:'مگابایت', approx:'حجم تقریبی', sizeOk:'✅ حجم مناسب', sizeWarn:'⚠️ هنگام ساخت فشرده می‌شود', deliveryShort:'🚚 گوگل درایو',
     nextFromList:'عنوان بعدی از لیست', orderTitle:'🎬 سفارش تولید محتوا — دکتر کیانوش سالاریان', topicLine:'📌 موضوع', topicDetail:'📝 توضیح موضوع',
     suggestedTitle:'🏷️ عنوان پیشنهادی', autoTitle:'با شما (از بانک ۸۰ عنوان)', contentLangLine:'🌐 زبان محتوا', typeLine:'🎞️ نوع', lockedTemplate:'قالب قفل‌شده ریل مولتی‌کالر',
@@ -328,8 +333,8 @@ const I18N = {
   en: {
     docTitle:'Content Studio — DR. کیانوش سالاریان', appTitle:'🎬 Content Studio',
     appSub:'DR. کیانوش سالاریان · Order Instagram content without pasting anything into chat',
-    statusChecking:'Checking the direct submission connection…', statusDirect:'Direct submission is active; one click adds the order to the production queue.',
-    statusStatic:'No-message submission is active; a prefilled order form opens and only needs final confirmation.',
+    statusChecking:'Checking the connection to this workspace queue…', statusDirect:'Connected to this workspace; the order and all settings are saved directly here.',
+    statusStatic:'This public copy is not connected to the workspace queue; open the studio from this chat for a short build code.',
     topicTitle:'📝 Topic or prompt', topicHint:'Write or paste the topic here; there is no character limit.', topicLabel:'Topic / prompt',
     topicPlaceholder:'For example: How can we recognize dehydration in a baby? Or paste the full text here…', unlimited:'✍️ Unlimited', characters:'characters', words:'words',
     titleLabel:'Suggested title (optional)', titlePlaceholder:'Leave empty to choose from the bank of 80 titles', fromList:'Instead of my topic: “Next title from the list” 📋',
@@ -344,11 +349,12 @@ const I18N = {
     voice:'🎙️ Narration', female:'👩 Female', male:'👨 Male', noVoice:'🔇 No narration', maxSize:'📦 Maximum post size',
     mb2:'2 MB', mb4:'4 MB', mb8:'8 MB', extras:'🧩 Included outputs', combined:'Combined version',
     parts:'Separate PNG and MP3 files', caption:'Caption and hashtags', reset:'↺ Defaults',
-    doneTitle:'✅ Order submitted!', doneText:'Your order is in the production queue and the result will be delivered in Google Drive. Keep this code.',
-    fallbackTitle:'No-message order submission', fallbackText:'The Submit order button at the bottom is a direct link to the prefilled GitHub form; nothing needs to be pasted into chat.',
-    openIssue:'Open the prefilled order form', copy:'📋 Backup copy', download:'⬇ Backup download', footer:'The multicolor reel template and Google Drive delivery remain fixed 🌷',
-    generateDirect:'🚀 Generate', generateStatic:'🚀 Submit order', generating:'⏳ Submitting…', needTopic:'First write a topic or select “Next title from the list” 🙏',
-    registered:'Submitted ✅ Order code: ', issueOpened:'The prefilled order form is open; only final confirmation is needed', issueTooLong:'This text is too long for the prefilled form; use the backup copy or download.', copied:'Copied ✅',
+    doneTitle:'✅ Order saved here!', doneText:'All settings are saved in this workspace build queue. Send only this short code in this chat to build it.',
+    copyPickup:'📋 Copy build command', buildWord:'Build', pickupCopied:'Build command copied; send it here ✅',
+    fallbackTitle:'Public copy is not connected', fallbackText:'For the main path, open the studio from this chat so the order is saved directly in this workspace queue. The GitHub form is only a backup.',
+    openIssue:'Open the GitHub backup form', copy:'📋 Backup copy', download:'⬇ Backup download', footer:'The multicolor reel template and Google Drive delivery remain fixed 🌷',
+    generateDirect:'🚀 Generate', generateStatic:'🚀 Backup form', generating:'⏳ Saving…', needTopic:'First write a topic or select “Next title from the list” 🙏',
+    registered:'Saved ✅ Build code: ', issueOpened:'The backup form is open; the main path is the studio inside this chat', issueTooLong:'This text is too long for the prefilled form; use the backup copy or download.', copied:'Copied ✅',
     slidesWord:'slides', secondsWord:'seconds', mbUnit:'MB', approx:'Estimated size', sizeOk:'✅ Good size', sizeWarn:'⚠️ Will be compressed during production', deliveryShort:'🚚 Google Drive',
     nextFromList:'Next title from the list', orderTitle:'🎬 Content production order — DR. کیانوش سالاریان', topicLine:'📌 Topic', topicDetail:'📝 Topic details',
     suggestedTitle:'🏷️ Suggested title', autoTitle:'Your choice (from the bank of 80 titles)', contentLangLine:'🌐 Content language', typeLine:'🎞️ Type', lockedTemplate:'Locked multicolor reel template',
@@ -520,8 +526,9 @@ async function generate(){
   const btn=$('genBtn'); btn.disabled=true; btn.textContent=t('generating');
   try {
     const j = await postOrder(payload); directReady=true; setStatus();
-    $('orderCode').textContent = num(j.order); $('done').style.display='block'; $('fallback').style.display='none';
-    $('done').scrollIntoView({behavior:'smooth', block:'nearest'}); toast(t('registered') + num(j.order));
+    lastPickupCode = j.pickup_code || j.order || '';
+    $('orderCode').textContent = lastPickupCode; $('done').style.display='block'; $('fallback').style.display='none';
+    $('done').scrollIntoView({behavior:'smooth', block:'nearest'}); toast(t('registered') + lastPickupCode);
   } catch(e) {
     directReady=false; setStatus(); showIssue(url, payload);
   } finally { btn.disabled=false; updateGenerateLabel(); }
@@ -545,6 +552,16 @@ $('secsPlus').onclick=()=>step('secs',1); $('secsMinus').onclick=()=>step('secs'
 $('langFa').onclick=()=>setLang('fa'); $('langEn').onclick=()=>setLang('en');
 $('genBtn').onclick=generate;
 $('genLink').onclick=openStaticOrder;
+$('copyPickupBtn').onclick=async()=>{
+  if (!lastPickupCode) return;
+  const command = `${t('buildWord')} ${lastPickupCode}`;
+  try { await navigator.clipboard.writeText(command); }
+  catch(e) {
+    const box=document.createElement('textarea'); box.value=command; document.body.appendChild(box);
+    box.select(); document.execCommand('copy'); box.remove();
+  }
+  toast(t('pickupCopied'));
+};
 $('copyBtn').onclick=async()=>{ try{await navigator.clipboard.writeText($('out').value);}catch(e){$('out').select(); document.execCommand('copy');} toast(t('copied')); };
 $('dlBtn').onclick=()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([$('out').value],{type:'text/plain;charset=utf-8'})); a.download='studio-order.txt'; a.click(); URL.revokeObjectURL(a.href); };
 $('resetBtn').onclick=()=>location.reload();
