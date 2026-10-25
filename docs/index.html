@@ -8,14 +8,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#22384a; --muted:#6b7f8f; --card:#fff;
+    --ink:#22384a; --muted:#6b7f8f; --card:#fff; --line:#e7ddd0; --radius:18px;
     --sage:#487A68; --warm:#D65C4C; --mint:#3A7084; --night:#C47A3E; --clay:#B06048;
-    --line:#e7ddd0; --radius:18px;
   }
   *{box-sizing:border-box}
   body{font-family:'Vazirmatn',Tahoma,sans-serif;margin:0;color:var(--ink);
        background:linear-gradient(180deg,#FDF6EC 0%,#F3EFE6 45%,#E9F0E9 100%);min-height:100vh}
-  .wrap{max-width:840px;margin:0 auto;padding:18px 14px 48px}
+  .wrap{max-width:860px;margin:0 auto;padding:18px 14px 48px}
   header{background:linear-gradient(120deg,var(--sage),var(--mint) 55%,var(--night));
          color:#fff;border-radius:22px;padding:26px 22px 22px;text-align:center;
          box-shadow:0 10px 30px rgba(58,112,132,.25)}
@@ -27,13 +26,27 @@
         padding:18px;margin-top:16px;box-shadow:0 4px 16px rgba(90,70,56,.07)}
   .card h2{margin:0 0 6px;font-size:18px;font-weight:900}
   .hint{color:var(--muted);font-size:13px;margin:0 0 12px}
-  label{display:block;font-weight:700;font-size:14px;margin:12px 0 6px}
+  label.lbl{display:block;font-weight:700;font-size:14px;margin:12px 0 6px}
   textarea,input[type=text]{width:100%;border:2px solid var(--line);border-radius:12px;
         padding:12px;font-family:inherit;font-size:15px;background:#fffdf9;color:var(--ink)}
   textarea:focus,input[type=text]:focus{outline:none;border-color:var(--sage)}
   .err{border-color:#D65C4C !important;background:#FFF3F1 !important}
+  .counter{display:flex;justify-content:space-between;color:var(--muted);font-size:12.5px;margin-top:6px;font-weight:700}
+  .counter b{color:var(--sage)}
   .check{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;margin-top:12px;cursor:pointer}
   .check input{width:20px;height:20px;accent-color:var(--sage)}
+  .opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .opt{position:relative;cursor:pointer}
+  .opt input{position:absolute;opacity:0;inset:0;cursor:pointer}
+  .opt span{display:flex;align-items:center;gap:7px;padding:10px 14px;border:2px solid var(--line);
+        border-radius:30px;background:#FBF7F0;font-size:13.5px;font-weight:700;transition:all .15s}
+  .opt input:checked + span{background:var(--sage);border-color:var(--sage);color:#fff}
+  .opt .dot{width:16px;height:16px;border-radius:50%;border:1px solid rgba(0,0,0,.1);flex:none}
+  .opt .multi{background:linear-gradient(90deg,#487A68 20%,#D65C4C 20% 40%,#3A7084 40% 60%,#C47A3E 60% 80%,#B06048 80%)}
+  .lk{font-size:11px;background:#EFE7DA;color:#8a6a45;border-radius:12px;padding:1px 7px;font-weight:800}
+  .opt input:checked + span .lk{background:rgba(255,255,255,.25);color:#fff}
+  .grp{margin-top:16px}
+  .grp:first-of-type{margin-top:4px}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
   @media(max-width:640px){.two{grid-template-columns:1fr}}
   .pick{background:#FBF7F0;border:2px solid var(--line);border-radius:14px;padding:14px;text-align:center}
@@ -43,27 +56,26 @@
   input[type=range]{width:100%;margin-top:10px;accent-color:var(--sage);height:28px}
   .pick.warm input[type=range]{accent-color:var(--clay)}
   .step{display:flex;gap:10px;justify-content:center;margin-top:8px}
-  .step button{width:48px;height:48px;border-radius:50%;border:none;font-size:24px;font-weight:900;
-        background:var(--sage);color:#fff;cursor:pointer}
+  .step button{width:48px;height:48px;border-radius:50%;border:none;font-size:24px;font-weight:900;background:var(--sage);color:#fff;cursor:pointer}
   .pick.warm .step button{background:var(--clay)}
-  .est{margin-top:14px;border-radius:12px;padding:12px 14px;font-size:14px;line-height:2;
-       background:#EFF6F1;border:1.5px solid #BFD8C9}
+  input[type=range]:disabled{opacity:.35}
+  .est{margin-top:14px;border-radius:12px;padding:12px 14px;font-size:14px;line-height:2;background:#EFF6F1;border:1.5px solid #BFD8C9}
   .est.warn{background:#FFF3E8;border-color:#F1CDA8}
-  .est b{font-weight:900}
   .badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:700;vertical-align:middle}
   .ok{background:#DFF0E5;color:#226646}.warnb{background:#FFE3C7;color:#9A5B16}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  @media(max-width:640px){.grid{grid-template-columns:1fr}}
-  .lock{background:#FBF7F0;border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;font-size:13.5px}
-  .lock b{font-weight:900}
-  .swatches{display:flex;gap:5px;margin-top:7px}
-  .swatches span{flex:1;height:16px;border-radius:5px;border:1px solid rgba(0,0,0,.06)}
-  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-  button.main{flex:1;min-width:200px;background:var(--sage);color:#fff;border:none;cursor:pointer;
-        padding:15px;border-radius:14px;font-family:inherit;font-size:17px;font-weight:900}
-  button.ghost{flex:1;min-width:160px;background:#fff;color:var(--sage);border:2px solid var(--sage);
-        cursor:pointer;padding:13px;border-radius:14px;font-family:inherit;font-size:15px;font-weight:800}
-  #out{background:#1E3038;color:#EAF3EE;border:none;min-height:230px;font-size:13.5px;line-height:1.9}
+  .gen{margin-top:18px;width:100%;border:none;cursor:pointer;color:#fff;
+       background:linear-gradient(120deg,var(--warm),var(--night) 55%,var(--sage));
+       padding:20px;border-radius:18px;font-family:inherit;font-size:21px;font-weight:900;
+       box-shadow:0 12px 28px rgba(214,92,76,.35)}
+  .gen:disabled{opacity:.6}
+  .gen-sub{text-align:center;color:var(--muted);font-size:12.5px;margin-top:8px}
+  #done{display:none;margin-top:16px;background:#EFF8F1;border:2px solid #9ED1AF;border-radius:16px;padding:18px;text-align:center}
+  #done .code{font-size:30px;font-weight:900;color:#226646;letter-spacing:1px}
+  #fallback{display:none;margin-top:14px}
+  #out{background:#1E3038;color:#EAF3EE;border:none;min-height:220px;font-size:13px;line-height:1.9;width:100%;border-radius:12px;padding:12px;font-family:inherit}
+  .mini{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .mini button{flex:1;min-width:150px;background:#fff;color:var(--sage);border:2px solid var(--sage);cursor:pointer;
+        padding:11px;border-radius:12px;font-family:inherit;font-size:14px;font-weight:800}
   #toast{position:fixed;bottom:22px;right:50%;transform:translateX(50%) translateY(90px);
         background:#22384a;color:#fff;padding:12px 22px;border-radius:30px;font-weight:700;font-size:14px;
         transition:transform .35s;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:9;text-align:center;max-width:92vw}
@@ -76,166 +88,275 @@
 
   <header>
     <h1>🎬 استودیو تولید محتوا</h1>
-    <p>دکتر کیانوش سالاریان — سفارش کاروسل صدا-تصویری اینستاگرام</p>
-    <div class="palbar">
-      <span style="background:#487A68"></span><span style="background:#D65C4C"></span>
-      <span style="background:#3A7084"></span><span style="background:#C47A3E"></span>
-      <span style="background:#B06048"></span>
-    </div>
+    <p>دکتر کیانوش سالاریان — سفارش تولید محتوای اینستاگرام، بدون نیاز به پیام دادن</p>
+    <div class="palbar"><span style="background:#487A68"></span><span style="background:#D65C4C"></span><span style="background:#3A7084"></span><span style="background:#C47A3E"></span><span style="background:#B06048"></span></div>
   </header>
 
   <!-- موضوع -->
   <section class="card">
-    <h2>📝 موضوع محتوا</h2>
-    <p class="hint">موضوع یا پرامپت رو اینجا پیست کنید؛ یا تیک «عنوان بعدی از لیست» رو بزنید تا از بانک ۸۰ عنوان برداشته بشه.</p>
-    <label for="topic">موضوع / پرامپت</label>
-    <textarea id="topic" rows="4" placeholder="مثلاً: کم‌آبی نوزاد را از کجا بفهمیم؟ یا هر موضوعی که در نظر دارید اینجا بنویسید / پیست کنید…"></textarea>
-    <label for="title">عنوان پیشنهادی (اختیاری)</label>
-    <input type="text" id="title" placeholder="اگر خالی باشه، خودم عنوان ترند پیشنهاد می‌دم">
-    <label class="check"><input type="checkbox" id="fromList"> از لیست برداشته بشه: «عنوان بعدی از لیست» 📋</label>
+    <h2>📝 موضوع یا پرامپت</h2>
+    <p class="hint">موضوع رو اینجا بنویسید یا پیست کنید — <b>بدون هیچ محدودیت کاراکتری</b>؛ هرقدر طولانیه اشکال نداره. یا تیک «عنوان بعدی از لیست» رو بزنید.</p>
+    <label class="lbl" for="topic">موضوع / پرامپت</label>
+    <textarea id="topic" rows="5" placeholder="مثلاً: کم‌آبی نوزاد را از کجا بفهمیم؟ ۶ نشانه مهم… یا یک متن کامل برای تبدیل به محتوا اینجا پیست کنید…"></textarea>
+    <div class="counter"><span>✍️ بدون محدودیت</span><span><b id="charCount">۰</b> کاراکتر · <b id="wordCount">۰</b> کلمه</span></div>
+    <label class="lbl" for="title">عنوان پیشنهادی (اختیاری)</label>
+    <input type="text" id="title" placeholder="خالی باشه؟ خودم از بانک ۸۰ عنوان، عنوان ترند انتخاب می‌کنم">
+    <label class="check"><input type="checkbox" id="fromList"> به جای موضوع من: «عنوان بعدی از لیست» 📋</label>
   </section>
 
-  <!-- دو انتخاب -->
+  <!-- انتخاب‌ها -->
   <section class="card">
-    <h2>🎚️ انتخاب‌های شما (فقط همین دو تا)</h2>
-    <p class="hint">همه‌ی بقیه‌ی مشخصات قبلاً قفل شده و پایین همین صفحه می‌بینید؛ فقط این دو عدد دست شماست.</p>
-    <div class="two">
+    <h2>🎚️ تنظیمات تولید</h2>
+    <p class="hint">همه‌ی گزینه‌ها قابل انتخاب‌اند؛ هرجا برچسب <span class="lk">🔒 پیش‌فرض شما</span> هست، یعنی همون انتخابیه که قبلاً قفل کردید و از پیش انتخاب شده.</p>
+
+    <div class="grp">
+      <label class="lbl">🎞️ نوع محتوا</label>
+      <div class="opts" id="ctype">
+        <label class="opt"><input type="radio" name="ctype" value="carousel_av" checked><span>کاروسل صدا-تصویری <i class="lk">🔒 پیش‌فرض شما</i></span></label>
+        <label class="opt"><input type="radio" name="ctype" value="carousel_img"><span>کاروسل تصویری (بدون صدا)</span></label>
+        <label class="opt"><input type="radio" name="ctype" value="reel"><span>ریل ویدیویی</span></label>
+        <label class="opt"><input type="radio" name="ctype" value="single"><span>تک‌تصویر</span></label>
+      </div>
+    </div>
+
+    <div class="two" style="margin-top:16px">
       <div class="pick">
         <div class="unit">تعداد اسلاید</div>
         <div class="num" id="slidesNum">۵</div>
-        <div class="unit">اسلاید</div>
+        <div class="unit">اسلاید <span class="lk">🔒 پیش‌فرض ۵</span></div>
         <input type="range" id="slides" min="3" max="8" step="1" value="5">
-        <div class="step">
-          <button type="button" id="slidesMinus" aria-label="کمتر">−</button>
-          <button type="button" id="slidesPlus" aria-label="بیشتر">+</button>
-        </div>
+        <div class="step"><button type="button" id="slidesMinus">−</button><button type="button" id="slidesPlus">+</button></div>
       </div>
       <div class="pick warm">
-        <div class="unit">کاراکتر نریشنِ هر اسلاید</div>
-        <div class="num" id="charsNum">۶۵</div>
-        <div class="unit">کاراکتر (حدود یک جمله)</div>
-        <input type="range" id="chars" min="40" max="100" step="5" value="65">
-        <div class="step">
-          <button type="button" id="charsMinus" aria-label="کمتر">−</button>
-          <button type="button" id="charsPlus" aria-label="بیشتر">+</button>
-        </div>
+        <div class="unit">زمان کل نریشن</div>
+        <div class="num" id="secsNum">۳۵</div>
+        <div class="unit">ثانیه <span class="lk">🔒 بازه‌ی ۳۰ تا ۴۰</span></div>
+        <input type="range" id="secs" min="30" max="40" step="1" value="35">
+        <div class="step"><button type="button" id="secsMinus">−</button><button type="button" id="secsPlus">+</button></div>
       </div>
     </div>
+
+    <div class="grp">
+      <label class="lbl">📐 سایز (نسبت ابعاد)</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="ratio" value="4:5" checked><span>۴:۵ پست اینستاگرام <i class="lk">🔒 پیش‌فرض شما</i></span></label>
+        <label class="opt"><input type="radio" name="ratio" value="9:16"><span>۹:۱۶ ریل / استوری</span></label>
+        <label class="opt"><input type="radio" name="ratio" value="1:1"><span>۱:۱ مربع</span></label>
+      </div>
+    </div>
+
+    <div class="grp">
+      <label class="lbl">🔎 رزولوشن <span id="pxOut" style="color:var(--sage)"></span></label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="res" value="720"><span>۷۲۰ سبک</span></label>
+        <label class="opt"><input type="radio" name="res" value="1080" checked><span>۱۰۸۰ استاندارد <i class="lk">🔒 پیش‌فرض شما</i></span></label>
+        <label class="opt"><input type="radio" name="res" value="1440"><span>۱۴۴۰ باکیفیت</span></label>
+      </div>
+    </div>
+
+    <div class="grp">
+      <label class="lbl">🎨 پالت رنگ</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="palette" value="multi" checked><span><i class="dot multi"></i>مولتی‌کالر (هر اسلاید یک پالت) <i class="lk">🔒 پیش‌فرض شما</i></span></label>
+        <label class="opt"><input type="radio" name="palette" value="sage"><span><i class="dot" style="background:#487A68"></i>مریم‌گلی</span></label>
+        <label class="opt"><input type="radio" name="palette" value="warm"><span><i class="dot" style="background:#D65C4C"></i>هلویی گرم</span></label>
+        <label class="opt"><input type="radio" name="palette" value="mint"><span><i class="dot" style="background:#3A7084"></i>نعنایی</span></label>
+        <label class="opt"><input type="radio" name="palette" value="night"><span><i class="dot" style="background:#C47A3E"></i>کهربایی</span></label>
+        <label class="opt"><input type="radio" name="palette" value="clay"><span><i class="dot" style="background:#B06048"></i>سفالی</span></label>
+      </div>
+    </div>
+
+    <div class="grp">
+      <label class="lbl">🖼️ سبک طراحی تصویر</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="istyle" value="pixar3d" checked><span>سه‌بعدی دیزنی / پیکسار <i class="lk">🔒 پیش‌فرض شما</i></span></label>
+        <label class="opt"><input type="radio" name="istyle" value="flat"><span>تخت مینیمال</span></label>
+        <label class="opt"><input type="radio" name="istyle" value="watercolor"><span>آبرنگ نرم</span></label>
+        <label class="opt"><input type="radio" name="istyle" value="kidsbook"><span>کتاب کودک</span></label>
+        <label class="opt"><input type="radio" name="istyle" value="photo"><span>عکس واقعی</span></label>
+      </div>
+    </div>
+
+    <div class="grp">
+      <label class="lbl">🎙️ نریشن</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="voice" value="female" checked><span>👩 زن — صدای ثابت فعلی <i class="lk">🔒 پیش‌فرض شما</i></span></label>
+        <label class="opt"><input type="radio" name="voice" value="male"><span>👨 مرد</span></label>
+        <label class="opt"><input type="radio" name="voice" value="none"><span>🔇 بدون نریشن</span></label>
+      </div>
+    </div>
+
+    <div class="grp">
+      <label class="lbl">📦 سقف حجم کل پست</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="maxmb" value="2"><span>۲ مگابایت (فشرده‌تر)</span></label>
+        <label class="opt"><input type="radio" name="maxmb" value="4" checked><span>۴ مگابایت <i class="lk">🔒 پیش‌فرض شما</i></span></label>
+        <label class="opt"><input type="radio" name="maxmb" value="8"><span>۸ مگابایت (باکیفیت‌تر)</span></label>
+      </div>
+    </div>
+
+    <div class="grp">
+      <label class="lbl">🧩 خروجی‌های همراه</label>
+      <label class="check"><input type="checkbox" id="xCombined" checked> نسخه‌ی یک‌تکه‌ی همه‌ی اسلایدها</label>
+      <label class="check"><input type="checkbox" id="xParts" checked> فایل‌های جدا برای تدوین خودم (PNG + MP3 هر اسلاید)</label>
+      <label class="check"><input type="checkbox" id="xCaption" checked> کپشن فارسی + هشتگ آماده</label>
+    </div>
+
     <div class="est" id="est"></div>
   </section>
 
-  <!-- قفل‌شده‌ها -->
-  <section class="card">
-    <h2>🔒 مشخصات ثابت و قفل‌شده</h2>
-    <p class="hint">این‌ها قبلاً با تأیید شما قفل شدن و در همه‌ی تولیدات ثابت‌اند:</p>
-    <div class="grid">
-      <div class="lock">🎞️ <b>قالب اسلاید:</b> سبک ریل، مولتی‌کالر — عنوان درشت، کارت تصویر، پلاک نکته، نوار پیشرفت راست‌به‌چپ</div>
-      <div class="lock">📐 <b>سایز و رزولوشن:</b> ۱۰۸۰×۱۳۵۰ (نسبت ۴:۵ مخصوص پست اینستاگرام)</div>
-      <div class="lock">🎨 <b>پالت رنگ:</b> مولتی‌کالر — هر اسلاید یک پالت از ۵ پالت ریل
-        <div class="swatches"><span style="background:#487A68"></span><span style="background:#D65C4C"></span><span style="background:#3A7084"></span><span style="background:#C47A3E"></span><span style="background:#B06048"></span></div>
+  <section class="card" style="text-align:center">
+    <h2>🚚 تحویل: گوگل درایو شما <span class="lk">🔒 ثابت</span></h2>
+    <p class="hint" style="margin-bottom:0">خروجی نهایی با اسم فارسی توی گوگل درایوتون آپلود می‌شه و لینک پخش/دانلودش رو تحویل می‌گیرید.</p>
+  </section>
+
+  <button class="gen" id="genBtn">🚀 جنریت کن — ثبت و شروع تولید</button>
+  <p class="gen-sub">با زدن این دکمه سفارش مستقیم ثبت می‌شه و توی صف تولید قرار می‌گیره؛ لازم نیست چیزی توی چت بفرستید 🌷</p>
+
+  <div id="done">
+    <div>✅ سفارش شما ثبت شد!</div>
+    <div class="code" id="orderCode"></div>
+    <div style="font-size:13.5px;color:#3c5a48">تولید در صف انجام است؛ خروجی نهایی در گوگل درایو شما تحویل داده می‌شود.<br>این کد را نگه دارید.</div>
+  </div>
+
+  <div id="fallback">
+    <section class="card">
+      <h2>📤 متن سفارش شما</h2>
+      <p class="hint">ثبت خودکار روی این آدرس وصل نشد؛ متن سفارش آماده‌ست — کپی کنید و توی چت بفرستید:</p>
+      <textarea id="out" readonly></textarea>
+      <div class="mini">
+        <button id="copyBtn">📋 کپی متن سفارش</button>
+        <button id="dlBtn">⬇ دانلود فایل سفارش</button>
       </div>
-      <div class="lock">🖼️ <b>سبک تصویر:</b> سه‌بعدی دیزنی / پیکسار، بدون متن داخل تصویر</div>
-      <div class="lock">🎙️ <b>نریشن:</b> صدای زن (صدای منتخب همیشگی) — مجموع کل ۳۰ تا ۴۰ ثانیه</div>
-      <div class="lock">📦 <b>حجم پست:</b> مجموع اسلایدها حداکثر ۴ مگابایت (فشرده‌سازی خودکار)</div>
-      <div class="lock">🧩 <b>خروجی‌ها:</b> اسلاید PNG + نریشن جدا + ویدیوی هر اسلاید + نسخه‌ی یک‌تکه + کپشن و هشتگ</div>
-      <div class="lock">🚚 <b>تحویل:</b> فقط گوگل درایو شما، با اسم فارسی خوانا + لینک پخش و دانلود</div>
-    </div>
-  </section>
+    </section>
+  </div>
 
-  <!-- سفارش آماده -->
-  <section class="card">
-    <h2>📤 متن سفارش آماده</h2>
-    <p class="hint">این متن خودکار از روی انتخاب‌های شما ساخته می‌شه. کپی‌اش کنید و همین‌جا توی چت برای من بفرستید تا تولید رو شروع کنم.</p>
-    <textarea id="out" readonly></textarea>
-    <div class="actions">
-      <button class="main" id="copyBtn">📋 کپی متن سفارش</button>
-      <button class="ghost" id="dlBtn">⬇ دانلود فایل سفارش</button>
-      <button class="ghost" id="resetBtn">↺ بازگشت به پیش‌فرض</button>
-    </div>
-  </section>
+  <div class="mini" style="max-width:420px;margin:16px auto 0">
+    <button id="resetBtn">↺ بازگشت همه به پیش‌فرض‌های قفل‌شده</button>
+  </div>
 
-  <footer>ساخته شده برای پیج دکتر کیانوش سالاریان 🌷<br>هر تغییری در قالب قفل‌شده فقط با گفتن شما انجام می‌شه.</footer>
+  <footer>ساخته شده برای پیج دکتر کیانوش سالاریان 🌷<br>قالب اسلاید (سبک ریل مولتی‌کالر) و روش تحویل (گوگل درایو) ثابت و قفل‌شده‌اند.</footer>
 </div>
 <div id="toast"></div>
 
 <script>
 const $ = id => document.getElementById(id);
 const fa = n => String(n).replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
-const RATE = 10;      // کاراکتر بر ثانیه (تقریبی، بر اساس نریشن‌های قبلی)
-const PAD  = 0.5;     // مکث پایانی هر اسلاید
-const KBPS = 0.045;   // مگابایت بر ثانیه (تقریبی حجم ویدیو)
-
-function vals(){
-  const slides = +$('slides').value, chars = +$('chars').value;
-  const totalChars = slides * chars;
-  const secs = totalChars / RATE + slides * PAD;
-  const mb = secs * KBPS;
-  return {slides, chars, totalChars, secs, mb, inRange: secs >= 30 && secs <= 40};
+const radio = name => document.querySelector(`input[name="${name}"]:checked`).value;
+const L = {
+  ctype:{carousel_av:'کاروسل صدا-تصویری',carousel_img:'کاروسل تصویری (بدون صدا)',reel:'ریل ویدیویی',single:'تک‌تصویر'},
+  palette:{multi:'مولتی‌کالر (هر اسلاید یک پالت از ۵ پالت ریل)',sage:'تک‌پالت مریم‌گلی',warm:'تک‌پالت هلویی گرم',mint:'تک‌پالت نعنایی',night:'تک‌پالت کهربایی',clay:'تک‌پالت سفالی'},
+  istyle:{pixar3d:'سه‌بعدی دیزنی/پیکسار',flat:'تخت مینیمال',watercolor:'آبرنگ نرم',kidsbook:'کتاب کودک',photo:'عکس واقعی'},
+  voice:{female:'زن (صدای ثابت فعلی)',male:'مرد',none:'بدون نریشن'}
+};
+function px(){
+  const r = radio('ratio'), w = +radio('res');
+  const h = r==='4:5' ? Math.round(w*5/4) : r==='9:16' ? Math.round(w*16/9) : w;
+  return {w, h, r};
+}
+function state(){
+  const slides = +$('slides').value, secs = +$('secs').value;
+  const voice = radio('voice');
+  const charsPerSlide = voice==='none' ? 0 : Math.max(30, Math.round(((secs - slides*0.5) * 10) / slides));
+  const p = px();
+  const estMB = (voice==='none' ? slides*0.9 : secs*0.045) * Math.pow((p.w*p.h)/(1080*1350), 0.7);
+  return {
+    topic: $('topic').value.trim(), title: $('title').value.trim(),
+    fromList: $('fromList').checked,
+    ctype: radio('ctype'), slides, secs, voice, charsPerSlide,
+    ratio: p.r, width: p.w, height: p.h,
+    palette: radio('palette'), istyle: radio('istyle'),
+    maxMB: +radio('maxmb'),
+    extras: {combined: $('xCombined').checked, parts: $('xParts').checked, caption: $('xCaption').checked},
+    estMB
+  };
 }
 function render(){
-  const v = vals();
-  $('slidesNum').textContent = fa(v.slides);
-  $('charsNum').textContent  = fa(v.chars);
-  const sec = v.secs.toFixed(1);
-  $('est').className = 'est' + (v.inRange ? '' : ' warn');
+  const s = state();
+  $('charCount').textContent = fa($('topic').value.length);
+  $('wordCount').textContent = fa($('topic').value.trim() ? $('topic').value.trim().split(/\s+/).length : 0);
+  $('slidesNum').textContent = fa(s.slides);
+  $('secsNum').textContent = fa(s.secs);
+  $('pxOut').textContent = `— ${fa(s.width)}×${fa(s.height)} پیکسل`;
+  const noVoice = s.voice === 'none';
+  $('secs').disabled = noVoice; $('secsPlus').disabled = noVoice; $('secsMinus').disabled = noVoice;
+  const over = s.estMB > s.maxMB;
+  $('est').className = 'est' + (over ? ' warn' : '');
   $('est').innerHTML =
-    `مجموع نریشن: <b>${fa(v.totalChars)} کاراکتر</b> ≈ <b>${fa(sec)} ثانیه</b> ` +
-    `<span class="badge ${v.inRange ? 'ok' : 'warnb'}">${v.inRange ? '✅ توی بازه‌ی ۳۰ تا ۴۰ ثانیه' : '⚠️ خارج از بازه‌ی قفل‌شده‌ی ۳۰ تا ۴۰'}</span><br>` +
-    `حجم تقریبی کل پست: <b>${fa(v.mb.toFixed(2))} مگابایت</b> (سقف قفل‌شده: ۴ مگابایت) — هر اسلاید ≈ ${fa((v.secs / v.slides).toFixed(1))} ثانیه`;
-
-  const topic = $('topic').value.trim();
-  const title = $('title').value.trim();
-  const fromList = $('fromList').checked;
-  const lines = [
+    `🎞️ <b>${L.ctype[s.ctype]}</b> · ${fa(s.slides)} اسلاید · ${fa(s.width)}×${fa(s.height)}<br>` +
+    (noVoice ? `🔇 بدون نریشن — حجم تقریبی: <b>${fa(s.estMB.toFixed(2))} مگابایت</b>` :
+      `🎙️ نریشن <b>${L.voice[s.voice]}</b> · مجموع <b>${fa(s.secs)} ثانیه</b> · هر اسلاید ≈ <b>${fa(s.charsPerSlide)} کاراکتر</b> نریشن<br>`) +
+    (noVoice ? '' : `📦 حجم تقریبی کل پست: <b>${fa(s.estMB.toFixed(2))} مگابایت</b> از سقف <b>${fa(s.maxMB)} مگابایت</b> `) +
+    `<span class="badge ${over ? 'warnb' : 'ok'}">${over ? '⚠️ نزدیک سقف — موقع ساخت فشرده می‌شود' : '✅ حجم مناسب'}</span>`;
+  $('out').value = orderText(s);
+}
+function orderText(s){
+  return [
     '🎬 سفارش تولید محتوا — دکتر کیانوش سالاریان',
-    '📌 موضوع: ' + (fromList ? 'عنوان بعدی از لیست' : (topic || '—')),
-    ...(topic && fromList ? ['📝 توضیح موضوع: ' + topic] : []),
-    '🏷️ عنوان پیشنهادی: ' + (title || 'با شما (عنوان ترند از بانک عنوان‌ها)'),
-    `🎞️ نوع: کاروسل صدا-تصویری ${fa(v.slides)} اسلایدی — قالب قفل‌شده‌ی ریل ۴:۵ مولتی‌کالر`,
-    `🔤 نریشن: هر اسلاید ${fa(v.chars)} کاراکتر — مجموع ${fa(v.totalChars)} کاراکتر ≈ ${fa(sec)} ثانیه (قانون ۳۰ تا ۴۰)`,
-    '📐 سایز و رزولوشن: ۱۰۸۰×۱۳۵۰ (۴:۵)',
-    '🎨 پالت: مولتی‌کالر ۵ پالت ریل | 🖼️ سبک تصویر: دیزنی/پیکسار سه‌بعدی',
-    '🎙️ صدا: زن (صدای ثابت) | 📦 حجم کل پست: حداکثر ۴ مگابایت',
-    '🧩 خروجی: اسلاید PNG + نریشن جدا + ویدیوی هر اسلاید + نسخه‌ی یک‌تکه + کپشن و هشتگ',
+    '📌 موضوع: ' + (s.fromList ? 'عنوان بعدی از لیست' : (s.topic || '—')),
+    ...(s.topic && s.fromList ? ['📝 توضیح موضوع: ' + s.topic] : []),
+    '🏷️ عنوان پیشنهادی: ' + (s.title || 'با شما (از بانک ۸۰ عنوان)'),
+    `🎞️ نوع: ${L.ctype[s.ctype]} — ${fa(s.slides)} اسلاید — قالب قفل‌شده‌ی ریل مولتی‌کالر`,
+    `📐 سایز: ${fa(s.ratio)} · رزولوشن: ${fa(s.width)}×${fa(s.height)}`,
+    `🎨 پالت: ${L.palette[s.palette]} | 🖼️ سبک تصویر: ${L.istyle[s.istyle]}`,
+    s.voice==='none' ? '🎙️ نریشن: ندارد' :
+      `🎙️ نریشن: ${L.voice[s.voice]} — مجموع ${fa(s.secs)} ثانیه (هر اسلاید ≈ ${fa(s.charsPerSlide)} کاراکتر)`,
+    `📦 سقف حجم پست: ${fa(s.maxMB)} مگابایت`,
+    '🧩 خروجی‌ها: ' + [s.extras.combined&&'نسخه یک‌تکه', s.extras.parts&&'فایل‌های جدا (PNG+MP3)', s.extras.caption&&'کپشن و هشتگ'].filter(Boolean).join(' + '),
     '🚚 تحویل: گوگل درایو'
-  ];
-  $('out').value = lines.join('\n');
+  ].join('\n');
 }
-function toast(msg){
-  const t = $('toast'); t.textContent = msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2600);
-}
-function step(id, delta){
-  const el = $(id), d = delta * (+el.step || 1);
-  el.value = Math.min(+el.max, Math.max(+el.min, +el.value + d));
-  render();
-}
-['topic','title','fromList','slides','chars'].forEach(id => $(id).addEventListener('input', render));
-$('slidesPlus').onclick  = ()=>step('slides', 1);
-$('slidesMinus').onclick = ()=>step('slides', -1);
-$('charsPlus').onclick   = ()=>step('chars', 1);
-$('charsMinus').onclick  = ()=>step('chars', -1);
-$('copyBtn').onclick = async () => {
-  if (!$('topic').value.trim() && !$('fromList').checked){
+function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
+function step(id, d){ const el=$(id); el.value = Math.min(+el.max, Math.max(+el.min, +el.value + d*(+el.step||1))); render(); }
+document.querySelectorAll('input,textarea').forEach(el => el.addEventListener('input', render));
+$('slidesPlus').onclick=()=>step('slides',1); $('slidesMinus').onclick=()=>step('slides',-1);
+$('secsPlus').onclick=()=>step('secs',1); $('secsMinus').onclick=()=>step('secs',-1);
+
+async function generate(){
+  const s = state();
+  if (!s.topic && !s.fromList){
     $('topic').classList.add('err'); $('topic').focus();
     toast('اول موضوع رو بنویسید یا تیک «عنوان بعدی از لیست» رو بزنید 🙏');
     setTimeout(()=>$('topic').classList.remove('err'), 2500);
     return;
   }
-  try { await navigator.clipboard.writeText($('out').value); }
+  const btn = $('genBtn'); btn.disabled = true; btn.textContent = '⏳ در حال ثبت سفارش…';
+  const payload = {...s, text: orderText(s), at: new Date().toISOString()};
+  try{
+    const ctl = new AbortController(); const to = setTimeout(()=>ctl.abort(), 4000);
+    const r = await fetch('api/generate', {method:'POST', headers:{'Content-Type':'application/json'},
+                                           body: JSON.stringify(payload), signal: ctl.signal});
+    clearTimeout(to);
+    if (!r.ok) throw new Error('bad status');
+    const j = await r.json();
+    if (!j.ok) throw new Error('not ok');
+    $('orderCode').textContent = fa(j.order);
+    $('done').style.display = 'block';
+    $('fallback').style.display = 'none';
+    $('done').scrollIntoView({behavior:'smooth'});
+    toast('ثبت شد ✅ کد سفارش: ' + fa(j.order));
+  }catch(e){
+    $('fallback').style.display = 'block';
+    $('out').value = payload.text;
+    try{ await navigator.clipboard.writeText(payload.text); }catch(_){}
+    $('fallback').scrollIntoView({behavior:'smooth'});
+    toast('متن سفارش آماده و کپی شد؛ توی چت پیست کنید 📋');
+  }finally{
+    btn.disabled = false; btn.textContent = '🚀 جنریت کن — ثبت و شروع تولید';
+  }
+}
+$('genBtn').onclick = generate;
+$('copyBtn').onclick = async () => {
+  try{ await navigator.clipboard.writeText($('out').value); }
   catch(e){ $('out').select(); document.execCommand('copy'); }
-  toast('کپی شد ✅ حالا توی چت پیست کنید و بفرستید');
+  toast('کپی شد ✅');
 };
 $('dlBtn').onclick = () => {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([$('out').value], {type:'text/plain;charset=utf-8'}));
-  a.download = 'content-order.txt'; a.click(); URL.revokeObjectURL(a.href);
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([$('out').value],{type:'text/plain;charset=utf-8'}));
+  a.download='content-order.txt'; a.click(); URL.revokeObjectURL(a.href);
 };
-$('resetBtn').onclick = () => {
-  $('topic').value=''; $('title').value=''; $('fromList').checked=false;
-  $('slides').value=5; $('chars').value=65; render();
-  toast('برگشت به پیش‌فرض‌های قفل‌شده 🔒');
-};
+$('resetBtn').onclick = () => { location.reload(); };
 render();
 </script>
 </body>
