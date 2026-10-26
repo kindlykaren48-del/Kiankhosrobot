@@ -1,0 +1,44 @@
+FLOW LEVEL 2 PROMPTS — TUMMY TIME: 4 WAYS YOUR BABY WON'T HATE
+
+How to use: upload the matching start frame, then copy the full prompt for that scene.
+Suggested first test: Scene 02.
+
+
+SCENE 01 — COVER: TUMMY TIME WITHOUT THE FIGHT
+Start frame: scene_01_cover.png
+
+Animate the reference image exactly as a warm Pixar-style 3D family animation. Preserve the same characters, faces, hairstyles, clothing, room, colors and composition. The happy baby stays on its tummy on the play mat, lifts its head a little more and smiles, with tiny gentle kicks. The mother and father clap softly twice and smile with encouragement. Slow, smooth push-in camera. Natural gentle motion only, soft cinematic light, silent video, no spoken dialogue, no music.
+
+Avoid: morphing faces, changing characters or clothes, extra people, extra fingers, distorted hands, rolling over, crawling away, fast motion, shaky camera, crying, scary expressions, text, letters, captions, subtitles, logo, watermark, photorealism.
+
+
+SCENE 02 — METHOD 1: ON YOUR CHEST
+Start frame: scene_02_chest.png
+
+Animate the reference image exactly as a warm Pixar-style 3D family animation. Preserve the same characters, faces, hairstyles, clothing, room, colors and composition. The awake father stays semi-reclined on the sofa while the baby lies tummy-to-tummy on his chest, fully supported by his hands. They look at each other and smile; the father's chest rises and falls gently with calm breathing and the baby lifts its head a tiny bit. Very slow, stable camera with a gentle push-in. Silent video, no spoken dialogue, no music.
+
+Avoid: morphing faces, changing characters or clothes, extra people, extra fingers, distorted hands, sleeping parent, baby sliding or falling, fast motion, shaky camera, crying, scary expressions, text, letters, captions, subtitles, logo, watermark, photorealism.
+
+
+SCENE 03 — METHOD 2: ACROSS YOUR LAP
+Start frame: scene_03_lap.png
+
+Animate the reference image exactly as a warm Pixar-style 3D family animation. Preserve the same characters, faces, hairstyles, clothing, room, colors and composition. The seated mother keeps one hand safely on the baby lying tummy-down across her legs and rocks her legs very gently from side to side. The awake baby looks forward, blinks naturally and lifts its head a little. Slow, smooth and stable camera. Natural gentle motion only, silent video, no spoken dialogue, no music.
+
+Avoid: morphing faces, changing characters or clothes, extra people, extra fingers, distorted hands, baby sliding or falling, strong bouncing, fast motion, shaky camera, crying, scary expressions, text, letters, captions, subtitles, logo, watermark, photorealism.
+
+
+SCENE 04 — METHOD 3: AIRPLANE HOLD
+Start frame: scene_04_airplane.png
+
+Animate the reference image exactly as a warm Pixar-style 3D family animation. Preserve the same characters, faces, hairstyles, clothing, room, colors and composition. The father walks very slowly in place while holding the awake baby tummy-down along his forearm in a gentle airplane hold, with the baby's head and whole body fully supported. The baby looks around curiously and moves its arms slightly. The camera follows smoothly with almost no shake. Silent video, no spoken dialogue, no music.
+
+Avoid: morphing faces, changing characters or clothes, extra people, extra fingers, distorted hands, unsupported dangling head, baby sliding or falling, spinning, fast walking, strong bouncing, shaky camera, crying, scary expressions, text, letters, captions, subtitles, logo, watermark, photorealism.
+
+
+SCENE 05 — METHOD 4: FLOOR, BUT FRIENDLIER
+Start frame: scene_05_floor.png
+
+Animate the reference image exactly as a warm Pixar-style 3D family animation. Preserve the same characters, faces, hairstyles, clothing, room, colors and composition. The awake baby stays on its tummy on the firm mat with the small rolled towel under its chest, pushes gently on its forearms and lifts its head toward the book. The mother lies face-to-face in front, smiles and slowly turns one page. Slow push-in camera with a warm, playful mood. Silent video, no spoken dialogue, no music.
+
+Avoid: morphing faces, changing characters or clothes, extra people, extra fingers, distorted hands, rolling over, crawling away, face pressing into the towel, fast motion, shaky camera, crying, scary expressions, text, letters, captions, subtitles, logo, watermark, photorealism.
