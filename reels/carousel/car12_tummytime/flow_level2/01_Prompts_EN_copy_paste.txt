@@ -1,13 +1,18 @@
-FLOW LEVEL 2 PROMPTS — TUMMY TIME: 4 WAYS YOUR BABY WON'T HATE
+FLOW LEVEL 2 PROMPTS WITH DIALOGUE — TUMMY TIME: 4 WAYS YOUR BABY WON'T HATE
 
-How to use: upload the matching start frame, then copy the full prompt for that scene.
+How to use: upload the matching start frame, turn audio ON, then copy the full prompt for that scene.
+The dialogue is inside each prompt so Flow generates the Persian voices and lip-sync. No separate narration file is needed.
 Suggested first test: Scene 02.
 
 
 SCENE 01 — COVER: TUMMY TIME WITHOUT THE FIGHT
 Start frame: scene_01_cover.png
 
-Animate the reference image exactly as a warm Pixar-style 3D family animation. Preserve the same characters, faces, hairstyles, clothing, room, colors and composition. The happy baby stays on its tummy on the play mat, lifts its head a little more and smiles, with tiny gentle kicks. The mother and father clap softly twice and smile with encouragement. Slow, smooth push-in camera. Natural gentle motion only, soft cinematic light, silent video, no spoken dialogue, no music.
+Animate the reference image exactly as a warm Pixar-style 3D family animation. Preserve the same characters, faces, hairstyles, clothing, room, colors and composition. The happy baby stays on its tummy on the play mat, lifts its head a little more and smiles, with tiny gentle kicks. The mother and father clap softly and smile with encouragement. Slow, smooth push-in camera. Natural gentle motion only, soft cinematic light.
+
+Audio and dialogue: Generate clear Persian speech with accurate lip-sync. Only the mother and father speak, one after another. The baby makes soft happy cooing sounds only and does not speak. No narrator voice and no background music.
+Mother looks at the camera and says in Persian: "نوزادت از شکم‌گردان بدش می‌آید؟"
+Father looks at the camera and says in Persian: "این چهار روش ملایم را امتحان کن."
 
 Avoid: morphing faces, changing characters or clothes, extra people, extra fingers, distorted hands, rolling over, crawling away, fast motion, shaky camera, crying, scary expressions, text, letters, captions, subtitles, logo, watermark, photorealism.
 
@@ -15,7 +20,10 @@ Avoid: morphing faces, changing characters or clothes, extra people, extra finge
 SCENE 02 — METHOD 1: ON YOUR CHEST
 Start frame: scene_02_chest.png
 
-Animate the reference image exactly as a warm Pixar-style 3D family animation. Preserve the same characters, faces, hairstyles, clothing, room, colors and composition. The awake father stays semi-reclined on the sofa while the baby lies tummy-to-tummy on his chest, fully supported by his hands. They look at each other and smile; the father's chest rises and falls gently with calm breathing and the baby lifts its head a tiny bit. Very slow, stable camera with a gentle push-in. Silent video, no spoken dialogue, no music.
+Animate the reference image exactly as a warm Pixar-style 3D family animation. Preserve the same characters, faces, hairstyles, clothing, room, colors and composition. The awake father stays semi-reclined on the sofa while the baby lies tummy-to-tummy on his chest, fully supported by his hands. They look at each other and smile; the father's chest rises and falls gently with calm breathing and the baby lifts its head a tiny bit. Very slow, stable camera with a gentle push-in.
+
+Audio and dialogue: Generate clear Persian speech with accurate lip-sync. Only the father speaks. The baby makes soft happy cooing sounds only and does not speak. No narrator voice and no background music.
+Father turns his face slightly toward the camera and says in Persian: "روی سینه‌ات نیمه‌دراز بکش؛ صورت‌به‌صورت شوید، این هم شکم‌گردان است."
 
 Avoid: morphing faces, changing characters or clothes, extra people, extra fingers, distorted hands, sleeping parent, baby sliding or falling, fast motion, shaky camera, crying, scary expressions, text, letters, captions, subtitles, logo, watermark, photorealism.
 
@@ -23,7 +31,10 @@ Avoid: morphing faces, changing characters or clothes, extra people, extra finge
 SCENE 03 — METHOD 2: ACROSS YOUR LAP
 Start frame: scene_03_lap.png
 
-Animate the reference image exactly as a warm Pixar-style 3D family animation. Preserve the same characters, faces, hairstyles, clothing, room, colors and composition. The seated mother keeps one hand safely on the baby lying tummy-down across her legs and rocks her legs very gently from side to side. The awake baby looks forward, blinks naturally and lifts its head a little. Slow, smooth and stable camera. Natural gentle motion only, silent video, no spoken dialogue, no music.
+Animate the reference image exactly as a warm Pixar-style 3D family animation. Preserve the same characters, faces, hairstyles, clothing, room, colors and composition. The seated mother keeps one hand safely on the baby lying tummy-down across her legs and rocks her legs very gently from side to side. The awake baby looks forward, blinks naturally and lifts its head a little. Slow, smooth and stable camera. Natural gentle motion only.
+
+Audio and dialogue: Generate clear Persian speech with accurate lip-sync. Only the mother speaks. The baby makes soft happy cooing sounds only and does not speak. No narrator voice and no background music.
+Mother looks at the camera and says in Persian: "روی پاهایت بگذارش و آرام تکانش بده تا راحت‌تر سرش را بالا بیاورد."
 
 Avoid: morphing faces, changing characters or clothes, extra people, extra fingers, distorted hands, baby sliding or falling, strong bouncing, fast motion, shaky camera, crying, scary expressions, text, letters, captions, subtitles, logo, watermark, photorealism.
 
@@ -31,7 +42,10 @@ Avoid: morphing faces, changing characters or clothes, extra people, extra finge
 SCENE 04 — METHOD 3: AIRPLANE HOLD
 Start frame: scene_04_airplane.png
 
-Animate the reference image exactly as a warm Pixar-style 3D family animation. Preserve the same characters, faces, hairstyles, clothing, room, colors and composition. The father walks very slowly in place while holding the awake baby tummy-down along his forearm in a gentle airplane hold, with the baby's head and whole body fully supported. The baby looks around curiously and moves its arms slightly. The camera follows smoothly with almost no shake. Silent video, no spoken dialogue, no music.
+Animate the reference image exactly as a warm Pixar-style 3D family animation. Preserve the same characters, faces, hairstyles, clothing, room, colors and composition. The father walks very slowly in place while holding the awake baby tummy-down along his forearm in a gentle airplane hold, with the baby's head and whole body fully supported. The baby looks around curiously and moves its arms slightly. The camera follows smoothly with almost no shake.
+
+Audio and dialogue: Generate clear Persian speech with accurate lip-sync. Only the father speaks. The baby makes soft happy cooing sounds only and does not speak. No narrator voice and no background music.
+Father looks at the camera and says in Persian: "روی ساعدت مثل هواپیما بگیرش؛ آرام، با حمایت کامل سر و بدنش."
 
 Avoid: morphing faces, changing characters or clothes, extra people, extra fingers, distorted hands, unsupported dangling head, baby sliding or falling, spinning, fast walking, strong bouncing, shaky camera, crying, scary expressions, text, letters, captions, subtitles, logo, watermark, photorealism.
 
@@ -39,6 +53,9 @@ Avoid: morphing faces, changing characters or clothes, extra people, extra finge
 SCENE 05 — METHOD 4: FLOOR, BUT FRIENDLIER
 Start frame: scene_05_floor.png
 
-Animate the reference image exactly as a warm Pixar-style 3D family animation. Preserve the same characters, faces, hairstyles, clothing, room, colors and composition. The awake baby stays on its tummy on the firm mat with the small rolled towel under its chest, pushes gently on its forearms and lifts its head toward the book. The mother lies face-to-face in front, smiles and slowly turns one page. Slow push-in camera with a warm, playful mood. Silent video, no spoken dialogue, no music.
+Animate the reference image exactly as a warm Pixar-style 3D family animation. Preserve the same characters, faces, hairstyles, clothing, room, colors and composition. The awake baby stays on its tummy on the firm mat with the small rolled towel under its chest, pushes gently on its forearms and lifts its head toward the book. The mother lies face-to-face in front, smiles and slowly turns one page. Slow push-in camera with a warm, playful mood.
+
+Audio and dialogue: Generate clear Persian speech with accurate lip-sync. Only the mother speaks. The baby makes soft happy cooing sounds only and does not speak. No narrator voice and no background music.
+Mother turns her face slightly toward the camera and says in Persian: "روی زمین حولهٔ لوله‌شده بگذار و روبه‌رویش دراز بکش؛ بازی شروع می‌شود."
 
 Avoid: morphing faces, changing characters or clothes, extra people, extra fingers, distorted hands, rolling over, crawling away, face pressing into the towel, fast motion, shaky camera, crying, scary expressions, text, letters, captions, subtitles, logo, watermark, photorealism.
