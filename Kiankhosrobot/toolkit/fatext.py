@@ -71,7 +71,10 @@ def bidi_runs(text: str):
     cls = [_cls(c) for c in text]
     # جهت پایه: نخستین نویسهٔ قوی
     base = "R"
-    for c in cls:
+    digits = {i for i, ch in enumerate(text) if _cls(ch) == "L" and ch.isdigit()}
+    for i, c in enumerate(cls):
+        if i in digits:
+            continue      # رقم جهت پایه را تعیین نمی‌کند
         if c in ("R", "L"):
             base = c
             break

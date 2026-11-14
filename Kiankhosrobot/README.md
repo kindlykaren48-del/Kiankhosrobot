@@ -73,6 +73,19 @@ mkdir -p /home/user/fonttmp && unzip -qo /tmp/v.zip -d /home/user/fonttmp
 
 ---
 
+## 🖼️ کاروسل ۷ اسلایدی موشن‌گرافیک
+
+```bash
+cd Kiankhosrobot/toolkit
+python3 topic_carousel_picky.py    # خروجی در ریشهٔ مخزن
+```
+
+ساختار: کاور + ۵ اسلاید محتوا + CTA. برای موضوع تازه یک فایل `topic_carousel_<slug>.py` با
+کلیدهای `title_lines`, `subtitle`, `tags`, `slides[]` (هر اسلاید: `num`, `title_fa`, `title_en`,
+`ill`, `bullets[۴])`, `cta`, `cta_big`, `caption` بساز و تصویرسازی‌ها را در
+`assets/carousel<N>/` بگذار. خروجی: `<slug>_reel.mp4` (بی‌صدا، ≤۴MB)، `<slug>_cover.png`،
+`<slug>_caption.txt` و `<slug>_slides/slide_1..7.png`.
+
 ## 🎨 پالت‌های موجود
 
 `neon` · `neonpurple` · `neonmosaic` · `aurora` · `nuclear` · `wineamber` · `kiddo`
