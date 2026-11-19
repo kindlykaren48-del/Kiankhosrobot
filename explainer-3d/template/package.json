@@ -1,0 +1,13 @@
+{
+  "name": "explainer-3d-template",
+  "version": "1.0.0",
+  "private": true,
+  "description": "قالب دائمی انیمیشن توضیحی سه‌بعدی — 25s, 1920x1080, 60fps, Three.js",
+  "type": "module",
+  "scripts": {
+    "render": "node render.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}

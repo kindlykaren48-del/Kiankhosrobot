@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>Explainer 3D — Template</title>
+<style>
+  @font-face {
+    font-family: 'Vazirmatn';
+    src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/ttf/Vazirmatn-Regular.ttf') format('truetype');
+  }
+  html, body { margin: 0; padding: 0; width: 1920px; height: 1080px; overflow: hidden; background: #07090E; }
+  #app { position: relative; width: 1920px; height: 1080px; }
+  canvas { display: block; }
+  .hud {
+    position: absolute; inset: 0; pointer-events: none;
+    font-family: 'Vazirmatn', sans-serif; color: #E2F1FF;
+  }
+  .hud .title {
+    position: absolute; top: 64px; right: 96px; left: 96px;
+    font-size: 64px; font-weight: 700; text-align: right;
+    text-shadow: 0 0 24px rgba(0,229,255,.45);
+  }
+  .hud .subtitle {
+    position: absolute; bottom: 72px; right: 96px; left: 96px;
+    font-size: 36px; text-align: right; opacity: .9;
+  }
+  .hud .accent-line {
+    position: absolute; top: 170px; right: 96px; width: 320px; height: 3px;
+    background: linear-gradient(90deg, #00E5FF, transparent);
+    box-shadow: 0 0 12px rgba(0,229,255,.8);
+  }
+  .hud .beat {
+    position: absolute; bottom: 24px; left: 48px;
+    font-size: 20px; opacity: .55; direction: ltr;
+  }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<div id="app">
+  <div class="hud">
+    <div class="title" id="hud-title">موضوع شما</div>
+    <div class="accent-line"></div>
+    <div class="subtitle" id="hud-subtitle"></div>
+    <div class="beat" id="hud-beat"></div>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+/* ============================================================
+   CONFIG — هر پروژه: موضوع، استایل و ۵ بیت استوری‌بورد
+   ============================================================ */
+const CONFIG = {
+  topic: 'موضوع شما',                 // ← موضوع کاربر را اینجا بگذارید
+  style: '01',                        // ← شماره استایل 01 تا 10
+  duration: 25,                       // ثانیه
+  beats: [                            // ۵ بیت — هر بیت ۵ ثانیه
+    { title: 'قلاب',   subtitle: 'متن بیت اول' },
+    { title: 'مسئله',  subtitle: 'متن بیت دوم' },
+    { title: 'راه‌حل', subtitle: 'متن بیت سوم' },
+    { title: 'مزیت',   subtitle: 'متن بیت چهارم' },
+    { title: 'جمع‌بندی', subtitle: 'متن بیت پنجم' },
+  ],
+};
+
+/* ============================================================
+   SCENE — استایل ۰۱: Dark Industrial Precision (پیش‌فرض)
+   برای استایل‌های دیگر، پالت/متریال/نور را طبق
+   PROJECT_INSTRUCTIONS.md تغییر دهید.
+   ============================================================ */
+const W = 1920, H = 1080;
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(W, H);
+renderer.setPixelRatio(1);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+document.getElementById('app').prepend(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x07090E);
+scene.fog = new THREE.Fog(0x07090E, 18, 46);
+
+const camera = new THREE.PerspectiveCamera(35, W / H, 0.1, 200);
+camera.position.set(0, 4.2, 14);
+camera.lookAt(0, 1.2, 0);
+
+// نور
+scene.add(new THREE.AmbientLight(0x334455, 0.6));
+const key = new THREE.DirectionalLight(0xffffff, 2.2);
+key.position.set(6, 10, 6);
+scene.add(key);
+const rim = new THREE.PointLight(0x00E5FF, 30, 30);
+rim.position.set(-6, 3, -4);
+scene.add(rim);
+
+// کف گرید تکنیکی
+const grid = new THREE.GridHelper(40, 40, 0x162032, 0x101828);
+grid.position.y = 0;
+scene.add(grid);
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(60, 60),
+  new THREE.MeshStandardMaterial({ color: 0x0A0D14, metalness: 0.6, roughness: 0.45 })
+);
+floor.rotation.x = -Math.PI / 2;
+floor.position.y = -0.02;
+scene.add(floor);
+
+// شیء اصلی: بلوک آلومینیومی برس‌خورده + حلقه‌های نورانی
+const hero = new THREE.Group();
+const block = new THREE.Mesh(
+  new THREE.BoxGeometry(3.2, 3.2, 3.2),
+  new THREE.MeshStandardMaterial({ color: 0x141821, metalness: 0.85, roughness: 0.3 })
+);
+hero.add(block);
+const ringMat = new THREE.MeshBasicMaterial({ color: 0x00E5FF });
+const ring1 = new THREE.Mesh(new THREE.TorusGeometry(3.4, 0.045, 16, 120), ringMat);
+ring1.rotation.x = Math.PI / 2;
+hero.add(ring1);
+const ring2 = new THREE.Mesh(new THREE.TorusGeometry(4.1, 0.03, 16, 120),
+  new THREE.MeshBasicMaterial({ color: 0xFFC300 }));
+ring2.rotation.x = Math.PI / 2.4;
+hero.add(ring2);
+hero.position.set(0, 2.4, 0);
+scene.add(hero);
+
+// ذرات شناور
+const pGeo = new THREE.BufferGeometry();
+const pCount = 400;
+const pPos = new Float32Array(pCount * 3);
+for (let i = 0; i < pCount; i++) {
+  pPos[i * 3] = (Math.random() - 0.5) * 30;
+  pPos[i * 3 + 1] = Math.random() * 10;
+  pPos[i * 3 + 2] = (Math.random() - 0.5) * 30;
+}
+pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+const particles = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0x00E5FF, size: 0.06, transparent: true, opacity: 0.7 }));
+scene.add(particles);
+
+// پست‌پروسس: Bloom
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(W, H), 0.55, 0.6, 0.85);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+/* ============================================================
+   renderAtTime(t) — تابع قطعی: برای هر t (ثانیه) صحنه را
+   دقیقاً همان‌طور که باید باشد تنظیم می‌کند.
+   هیچ وابستگی به زمان واقعی/فریم قبلی ندارد.
+   ============================================================ */
+const hudTitle = document.getElementById('hud-title');
+const hudSubtitle = document.getElementById('hud-subtitle');
+const hudBeat = document.getElementById('hud-beat');
+hudTitle.textContent = CONFIG.topic;
+
+function easeInOut(x) { return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2; }
+function clamp01(x) { return Math.min(1, Math.max(0, x)); }
+
+window.renderAtTime = function (t) {
+  t = Math.max(0, Math.min(CONFIG.duration, t));
+  const beatDur = CONFIG.duration / CONFIG.beats.length;
+  const beatIdx = Math.min(CONFIG.beats.length - 1, Math.floor(t / beatDur));
+  const beatT = clamp01((t - beatIdx * beatDur) / beatDur);
+  const beat = CONFIG.beats[beatIdx];
+
+  // HUD
+  hudSubtitle.textContent = beat.subtitle;
+  hudBeat.textContent = `BEAT ${beatIdx + 1}/5 — ${t.toFixed(2)}s`;
+  hudSubtitle.style.opacity = String(0.35 + 0.65 * easeInOut(clamp01(beatT * 3)));
+
+  // دوربین: دالی/اوربیت سینمایی در هر بیت
+  const orbit = beatIdx * 0.55 + easeInOut(beatT) * 0.35;
+  camera.position.set(Math.sin(orbit) * 13, 4.2 - beatIdx * 0.25, Math.cos(orbit) * 13);
+  camera.lookAt(0, 1.4, 0);
+
+  // شیء اصلی: چرخش مکانیکی + شناوری ملایم
+  hero.rotation.y = t * 0.45;
+  hero.position.y = 2.4 + Math.sin(t * 1.4) * 0.18;
+  const pop = easeInOut(clamp01(beatT * 2.5));
+  hero.scale.setScalar(0.6 + 0.4 * pop);
+
+  // حلقه‌ها
+  ring1.rotation.z = t * 0.8;
+  ring2.rotation.z = -t * 0.55;
+
+  // ذرات
+  particles.rotation.y = t * 0.03;
+
+  composer.render();
+};
+
+// پیش‌نمایش زنده در مرورگر (بدون نیاز به رندر)
+let start = performance.now();
+(function loop() {
+  const t = ((performance.now() - start) / 1000) % CONFIG.duration;
+  window.renderAtTime(t);
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
