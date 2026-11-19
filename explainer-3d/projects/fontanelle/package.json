@@ -1,0 +1,8 @@
+{
+  "name": "fontanelle-explainer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {"render": "node render.mjs"},
+  "dependencies": {"@sparticuz/chromium": "131.0.1", "playwright": "1.48.2", "three": "0.160.0"}
+}
