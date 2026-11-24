@@ -10,3 +10,9 @@ plog*
 
 # موتور استیکمن — فایل‌های میانی
 toolkit/tmp_*/
+
+# وابستگی‌ها و محیط موقت موتور موشن
+.local/
+node_modules/
+.venv/
+opuscar_mode/smoke/local-test.mp4

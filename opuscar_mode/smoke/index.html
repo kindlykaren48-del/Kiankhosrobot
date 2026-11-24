@@ -1,0 +1,16 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#083f4b}canvas{display:block;width:100%;height:100%}</style></head>
+<body><canvas id="stage"></canvas><script type="module">
+import { eo, clamp } from '/core/lib.js';
+const c=document.getElementById('stage'),ctx=c.getContext('2d');
+window.DUR=2;
+window.render=(t)=>{
+ c.width=innerWidth;c.height=innerHeight;
+ const w=c.width,h=c.height,p=eo(clamp(t/.6,0,1));
+ ctx.fillStyle='#083f4b';ctx.fillRect(0,0,w,h);
+ ctx.fillStyle='#1bc9a4';ctx.beginPath();ctx.arc(w*.5,h*.47,Math.min(w,h)*(.13+.12*p),0,Math.PI*2);ctx.fill();
+ ctx.strokeStyle='#f3c85f';ctx.lineWidth=8;ctx.beginPath();ctx.arc(w*.5,h*.47,Math.min(w,h)*.3,-Math.PI/2,-Math.PI/2+Math.PI*2*clamp(t/2,0,1));ctx.stroke();
+ ctx.fillStyle='white';ctx.textAlign='center';ctx.font=`bold ${Math.round(w*.068)}px sans-serif`;ctx.fillText('MOTION ENGINE TEST',w*.5,h*.85);
+};
+window.render(0);window.READY=true;
+</script></body></html>
